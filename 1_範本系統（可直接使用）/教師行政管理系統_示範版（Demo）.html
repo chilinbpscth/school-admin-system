@@ -642,12 +642,25 @@
                     return;
                 }
 
-                container.innerHTML = cands.map(c => `
-                    <button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="flex flex-col items-center p-3 border-2 rounded-xl transition ${this.subAssignments[pkey] === c.name ? 'bg-blue-600 text-white border-blue-800 shadow-inner' : 'bg-white text-slate-600 border-slate-100 hover:bg-blue-50'}">
-                        <span class="text-sm font-bold">${c.displayName}</span>
-                        <span class="text-[10px] opacity-60">今日課量: ${c.load}節</span>
-                    </button>
-                `).join('');
+                container.innerHTML = cands.map(c => {
+                    const isAssignedHere = this.subAssignments[pkey] === c.name;
+                    const assignedElsewhere = Object.entries(this.subAssignments)
+                        .filter(([k, v]) => k !== pkey && v === c.name).length;
+                    const btnClass = isAssignedHere
+                        ? 'bg-blue-600 text-white border-blue-800 shadow-inner'
+                        : assignedElsewhere > 0
+                            ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
+                            : 'bg-white text-slate-600 border-slate-100 hover:bg-blue-50';
+                    const badge = (!isAssignedHere && assignedElsewhere > 0)
+                        ? `<span class="text-[10px] font-bold bg-orange-200 text-orange-700 px-1.5 py-0.5 rounded-full mt-1">已代 ${assignedElsewhere} 堂</span>`
+                        : '';
+                    return `
+                        <button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="flex flex-col items-center p-3 border-2 rounded-xl transition ${btnClass}">
+                            <span class="text-sm font-bold">${c.displayName}</span>
+                            <span class="text-[10px] opacity-60">今日課量: ${c.load}節</span>
+                            ${badge}
+                        </button>`;
+                }).join('');
 
                 const status = document.getElementById(`status-${pkey}`);
                 if(this.subAssignments[pkey]) {
