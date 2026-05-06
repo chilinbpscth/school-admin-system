@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教師行政管理系統 - 簡易範本 (12班小型學校)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .toast-enter { transform: translateX(100%); opacity: 0; }
+        .toast-enter-active { transform: translateX(0); opacity: 1; transition: all 300ms ease-out; }
+        .toast-exit-active { transform: translateX(100%); opacity: 0; transition: all 300ms ease-in; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .tab-active { background-color: #eff6ff; color: #1e40af; border-bottom: 3px solid #2563eb; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-3">
+                    <i class="fa-solid fa-user-tie text-yellow-400"></i> 教師行政管理系統 - 簡易範本
+                </h1>
+                <p class="text-xs text-yellow-200 mt-2 bg-white/10 px-3 py-1 rounded-full inline-block border border-white/20">
+                    系統開發：張定恒主任 (佛教志蓮小學)
+                </p>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] md:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20 block">數據版本：2026-05-04 版</span>
+                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100 mt-1 block">半日 8 時段架構 (12位教師 / 12班)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b sticky top-[88px] z-40 no-print">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap gap-x-2 gap-y-0" id="navTabs"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-6 no-print">
+
+        <!-- 學校概覽 -->
+        <section id="section-overview" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-school text-blue-600"></i> 學校資料概覽
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                        <div class="text-blue-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-users-class"></i> <span>班級數目</span></div>
+                        <div class="text-5xl font-bold text-blue-900 mt-3">12 班</div>
+                        <div class="text-xs text-blue-500 mt-2">小一至小六 · 每級 2 班 (A-B)</div>
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                        <div class="text-emerald-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-chalkboard-teacher"></i> <span>教師人數</span></div>
+                        <div class="text-5xl font-bold text-emerald-900 mt-3">12 位</div>
+                        <div class="text-xs text-emerald-500 mt-2">代號模式 (T01-T12)</div>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                        <div class="text-amber-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-clock"></i> <span>時段架構</span></div>
+                        <div class="text-5xl font-bold text-amber-900 mt-3">8 時段</div>
+                        <div class="text-xs text-amber-500 mt-2">半日制 · 6節課 + 2個小息</div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">主要科目</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">中文</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">英文</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">數學</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">常識</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">視藝</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">體育</span>
+                        <span class="px-4 py-1.5 bg-slate-100 text-slate-700 text-sm rounded-2xl font-medium">音樂</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 教師課表 -->
+        <section id="section-timetable" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-600"></i> 教師課表查詢
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">選擇教師代號</label>
+                        <select id="f2-teacher" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-600 mb-2">選擇星期</label>
+                        <select id="f2-day" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"></select>
+                    </div>
+                </div>
+                <div id="f2-result" class="overflow-x-auto"></div>
+            </div>
+        </section>
+
+        <!-- 查詢空堂 -->
+        <section id="section-free" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
+                <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2">
+                    <i class="fa-solid fa-user-check"></i> 查詢空堂教師
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-green-50/50 p-6 rounded-xl border border-green-100">
+                    <div>
+                        <label class="block text-sm font-bold text-green-900 mb-2">選擇星期</label>
+                        <select id="f1-day" class="w-full border-green-200 border rounded-lg p-3"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-green-900 mb-2">選擇時段</label>
+                        <select id="f1-period" class="w-full border-green-200 border rounded-lg p-3"></select>
+                    </div>
+                </div>
+                <button onclick="app.findFreeTeachers()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mb-8 shadow-md hover:bg-green-700 transition">查詢代號名單</button>
+                <div id="f1-result" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- 查詢職務 -->
+        <section id="section-duties" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-teal-100">
+                <h2 class="text-xl font-bold mb-6 text-teal-800 flex items-center gap-2">
+                    <i class="fa-solid fa-building-shield"></i> 查詢該時段教師職務
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold text-teal-900 mb-2">選擇星期</label>
+                        <select id="f4-day" class="w-full border-teal-200 border rounded-lg p-3"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-teal-900 mb-2">選擇時段</label>
+                        <select id="f4-period" class="w-full border-teal-200 border rounded-lg p-3"></select>
+                    </div>
+                </div>
+                <button onclick="app.findDuties()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl mb-8 shadow-md hover:bg-teal-700 transition">分析職務分佈</button>
+                <div id="f4-result" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- 共同空堂 -->
+        <section id="section-common" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-100">
+                <h2 class="text-xl font-bold mb-6 text-indigo-800 flex items-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder"></i> 共同空堂分析
+                </h2>
+                <div id="f3-teacher-list" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 p-4 bg-slate-50 rounded-xl border overflow-y-auto max-h-64"></div>
+                <div class="max-w-xs mb-6">
+                    <label class="block text-sm font-bold text-indigo-900 mb-2">星期</label>
+                    <select id="f3-day" class="w-full border border-indigo-200 rounded-lg p-3"></select>
+                </div>
+                <button onclick="app.findCommonFree()" class="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-md transition hover:bg-indigo-700">分析共同時段</button>
+                <div id="f3-result" class="mt-8"></div>
+            </div>
+        </section>
+
+        <!-- 代課推薦 -->
+        <section id="section-sub" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100">
+                <h2 class="text-xl font-bold mb-6 text-red-800 flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen"></i> 代課推薦系統
+                </h2>
+                <div class="bg-red-50/50 p-6 rounded-2xl border border-red-100 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-bold text-red-900 mb-2">請假教師代號</label>
+                            <select id="f5-teacher" class="w-full border-red-200 border rounded-lg p-3 bg-white shadow-sm"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-red-900 mb-2">請假日期</label>
+                            <input type="date" id="f5-date" class="w-full border-red-200 border rounded-lg p-3 bg-white shadow-sm">
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-red-900 mb-3 flex justify-between items-center">
+                            <span>代課節次範圍</span>
+                            <div class="flex gap-2">
+                                <button onclick="app.toggleAllSubPeriods(true)" class="text-xs text-blue-600 hover:underline">全選</button>
+                                <span class="text-slate-300">|</span>
+                                <button onclick="app.toggleAllSubPeriods(false)" class="text-xs text-red-600 hover:underline">全清</button>
+                            </div>
+                        </label>
+                        <div id="f5-periods-select" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                    </div>
+                    <button onclick="app.generateSubRecommendations()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> 生成代課方案
+                    </button>
+                </div>
+                <div id="f5-workspace" class="hidden space-y-6 pb-20"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 text-center py-6 text-sm mt-auto no-print">
+        <p>教師行政管理系統 - 簡易範本 | 代號隱私模式 | 內部行政用途</p>
+    </footer>
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[60] flex flex-col gap-3 no-print"></div>
+
+    <script>
+        // ============================================================
+        // CONFIG - 學校時段設定
+        // ============================================================
+        // 這裡定義了你學校一日的時間表結構。
+        // 每個時段包含：key（識別碼）、label（顯示名稱）、time（時間）、type（類型）
+        // type 選項：lesson（課堂）、duty（職務/當值）、lunch（午膳）
+        // ============================================================
+        const CONFIG = {
+            PERIODS: [
+                { key: 'p1', label: '第一節', time: '08:00-08:40', type: 'lesson' },
+                { key: 'p2', label: '第二節', time: '08:40-09:20', type: 'lesson' },
+                { key: 'b1', label: '小息一',  time: '09:20-09:40', type: 'duty' },
+                { key: 'p3', label: '第三節', time: '09:40-10:20', type: 'lesson' },
+                { key: 'p4', label: '第四節', time: '10:20-11:00', type: 'lesson' },
+                { key: 'b2', label: '小息二',  time: '11:00-11:20', type: 'duty' },
+                { key: 'p5', label: '第五節', time: '11:20-12:00', type: 'lesson' },
+                { key: 'p6', label: '第六節', time: '12:00-12:30', type: 'lesson' }
+            ],
+            DAYS: ["星期一", "星期二", "星期三", "星期四", "星期五"],
+            // busyKeys：系統用來判斷「這個時段有沒有課」的關鍵字列表
+            // 如果時間表內容包含任何一個 busyKeys，就視為「有課」
+            busyKeys: ["中", "英", "數", "常", "視", "體", "音", "1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
+        };
+
+        // ============================================================
+        // TAB_CONFIG - 頁籤設定
+        // ============================================================
+        const TAB_CONFIG = [
+            { id: 'section-overview', label: '學校概覽', icon: 'fa-school' },
+            { id: 'section-timetable', label: '教師課表', icon: 'fa-clock-rotate-left' },
+            { id: 'section-free', label: '查詢空堂老師', icon: 'fa-user-check' },
+            { id: 'section-duties', label: '查詢該時段教師職務', icon: 'fa-building-shield' },
+            { id: 'section-common', label: '共同空堂分析', icon: 'fa-users-viewfinder' },
+            { id: 'section-sub', label: '代課推薦系統', icon: 'fa-user-pen' }
+        ];
+
+        // ============================================================
+        // teachersRaw - 教師課表數據
+        // ============================================================
+        // 這裡是系統的核心數據。每個教師是一個物件：
+        // - name: 顯示名稱（建議用代號 T01, T02... 保護私隱）
+        // - Mon, Tue, Wed, Thu, Fri: 每天的時間表陣列
+        //
+        // 重要規則：
+        // 1. 每個陣列的長度必須 = CONFIG.PERIODS 的數量（這裡是 8）
+        // 2. 索引 0 = 第一節, 索引 1 = 第二節, 索引 2 = 小息一... 如此類推
+        // 3. "" (空字串) = 完全空堂
+        // 4. 包含 "備" 字 = 備課（視為空堂，無需代課）
+        // 5. 包含 busyKeys 中的任何字 = 有課
+        // 6. 其他文字（如 "(操場)"、"樓層"）= 職務（不算課堂，但也不算完全空堂）
+        // ============================================================
+        const teachersRaw = [
+            // T01：中文科，教 1A、1B、2A
+            {
+                name: "T01",
+                Mon: ["1A中", "1A中", "",     "1B中", "",     "",     "2A中", "2A中"],
+                Tue: ["1A中", "",     "",     "1A中", "1B中", "",     "2A中", ""    ],
+                Wed: ["1A中", "1A中", "",     "",     "1B中", "",     "1B中", "2A中"],
+                Thu: ["1A中", "",     "",     "1A中", "",     "",     "2A中", "2A中"],
+                Fri: ["1A中", "1B中", "",     "",     "1A中", "",     "2A中", ""    ]
+            },
+            // T02：英文科，教 1A、1B、2A
+            {
+                name: "T02",
+                Mon: ["1A英", "1A英", "",     "1B英", "",     "",     "2A英", "2A英"],
+                Tue: ["1A英", "",     "",     "1A英", "1B英", "",     "2A英", ""    ],
+                Wed: ["1A英", "1A英", "",     "",     "1B英", "",     "1B英", "2A英"],
+                Thu: ["1A英", "",     "",     "1A英", "",     "",     "2A英", "2A英"],
+                Fri: ["1A英", "1B英", "",     "",     "1A英", "",     "2A英", ""    ]
+            },
+            // T03：數學科，教 3A、3B、4A
+            {
+                name: "T03",
+                Mon: ["3A數", "3A數", "",     "3B數", "",     "",     "4A數", "4A數"],
+                Tue: ["3A數", "",     "",     "3A數", "3B數", "",     "4A數", ""    ],
+                Wed: ["3A數", "3A數", "",     "",     "3B數", "",     "3B數", "4A數"],
+                Thu: ["3A數", "",     "",     "3A數", "",     "",     "4A數", "4A數"],
+                Fri: ["3A數", "3B數", "",     "",     "3A數", "",     "4A數", ""    ]
+            },
+            // T04：常識科，教 3A、3B、4A、5A、5B、6A、6B
+            {
+                name: "T04",
+                Mon: ["3A常", "3A常", "",     "3B常", "",     "",     "4A常", "4A常"],
+                Tue: ["5A常", "",     "",     "5A常", "5B常", "",     "6A常", ""    ],
+                Wed: ["5A常", "5A常", "",     "",     "5B常", "",     "5B常", "6A常"],
+                Thu: ["6A常", "",     "",     "6A常", "",     "",     "6B常", "6B常"],
+                Fri: ["6B常", "5B常", "",     "",     "6B常", "",     "6A常", ""    ]
+            },
+            // T05：視藝科，教 1A、2A、3A
+            {
+                name: "T05",
+                Mon: ["1A視", "",     "",     "2A視", "",     "",     "3A視", ""    ],
+                Tue: ["",     "1A視", "",     "",     "2A視", "",     "",     "3A視"],
+                Wed: ["1A視", "",     "",     "2A視", "",     "",     "3A視", ""    ],
+                Thu: ["",     "1A視", "",     "",     "2A視", "",     "",     "3A視"],
+                Fri: ["1A視", "",     "",     "2A視", "",     "",     "3A視", ""    ]
+            },
+            // T06：體育科，教全校
+            {
+                name: "T06",
+                Mon: ["1A體", "1B體", "",     "2A體", "2B體", "",     "3A體", "3B體"],
+                Tue: ["4A體", "4B體", "",     "5A體", "5B體", "",     "6A體", "6B體"],
+                Wed: ["1A體", "1B體", "",     "2A體", "2B體", "",     "3A體", "3B體"],
+                Thu: ["4A體", "4B體", "",     "5A體", "5B體", "",     "6A體", "6B體"],
+                Fri: ["",     "",     "(操場)", "",     "",     "(操場)", "",     ""    ]
+            },
+            // T07：音樂科
+            {
+                name: "T07",
+                Mon: ["1A音", "",     "",     "1B音", "",     "",     "2A音", ""    ],
+                Tue: ["",     "2B音", "",     "",     "3A音", "",     "",     "3B音"],
+                Wed: ["4A音", "",     "",     "4B音", "",     "",     "5A音", ""    ],
+                Thu: ["",     "5B音", "",     "",     "6A音", "",     "",     "6B音"],
+                Fri: ["",     "",     "",     "",     "",     "",     "",     ""    ]
+            },
+            // T08：上午有課，下午空堂（方便測試代課功能）
+            {
+                name: "T08",
+                Mon: ["5A中", "5A中", "",     "5B中", "",     "",     "",     ""    ],
+                Tue: ["5A中", "",     "",     "5B中", "",     "",     "",     ""    ],
+                Wed: ["5A中", "5A中", "",     "",     "",     "",     "",     ""    ],
+                Thu: ["5A中", "",     "",     "5B中", "",     "",     "",     ""    ],
+                Fri: ["5A中", "5B中", "",     "",     "",     "",     "",     ""    ]
+            },
+            // T09：只有星期二、四有課（方便測試空堂查詢）
+            {
+                name: "T09",
+                Mon: ["",     "",     "",     "",     "",     "",     "",     ""    ],
+                Tue: ["6A英", "6A英", "",     "6B英", "",     "",     "",     ""    ],
+                Wed: ["",     "",     "",     "",     "",     "",     "",     ""    ],
+                Thu: ["6A英", "",     "",     "6B英", "",     "",     "",     ""    ],
+                Fri: ["",     "",     "",     "",     "",     "",     "",     ""    ]
+            },
+            // T10：備課主任（大量「備」課時段）
+            {
+                name: "T10",
+                Mon: ["P1中備", "1A中", "",     "P3中備", "",     "",     "1B中", "P6中備"],
+                Tue: ["1A中", "P2中備", "",     "",     "P4中備", "",     "1B中", ""    ],
+                Wed: ["P1中備", "1A中", "",     "P3中備", "",     "",     "1B中", "P6中備"],
+                Thu: ["1A中", "P2中備", "",     "",     "P4中備", "",     "1B中", ""    ],
+                Fri: ["P1中備", "1A中", "",     "P3中備", "",     "",     "1B中", "P6中備"]
+            },
+            // T11：行政主任（大量當值，少課堂）
+            {
+                name: "T11",
+                Mon: ["",     "",     "(操場)", "",     "",     "(樓層)", "",     ""    ],
+                Tue: ["",     "",     "(樓層)", "",     "",     "(操場)", "",     ""    ],
+                Wed: ["",     "",     "(操場)", "",     "",     "(樓層)", "",     ""    ],
+                Thu: ["",     "",     "(樓層)", "",     "",     "(操場)", "",     ""    ],
+                Fri: ["",     "",     "(操場)", "",     "",     "(樓層)", "",     ""    ]
+            },
+            // T12：全科包班（幾乎天天滿課）
+            {
+                name: "T12",
+                Mon: ["2B數", "2B數", "",     "2B常", "2B常", "",     "2B英", "2B英"],
+                Tue: ["2B數", "2B英", "",     "2B中", "2B中", "",     "2B常", "2B數"],
+                Wed: ["2B中", "2B數", "",     "2B英", "2B英", "",     "2B常", "2B中"],
+                Thu: ["2B常", "2B中", "",     "2B數", "2B數", "",     "2B英", "2B常"],
+                Fri: ["2B英", "2B常", "",     "2B中", "2B數", "",     "2B數", "2B英"]
+            }
+        ];
+
+        // ============================================================
+        // DataManager - 數據處理層
+        // ============================================================
+        class DataManager {
+            constructor() {
+                // 處理教師數據，統一使用代號
+                this.teachers = teachersRaw.map((t, idx) => {
+                    const code = `T${(idx + 1).toString().padStart(2, '0')}`;
+                    return { ...t, name: code, id: idx + 1, displayName: code };
+                });
+            }
+
+            getSchedule(name, day) {
+                const dayKey = { "星期一": "Mon", "星期二": "Tue", "星期三": "Wed", "星期四": "Thu", "星期五": "Fri" }[day];
+                const t = this.teachers.find(x => x.name === name);
+                return t ? t[dayKey] : null;
+            }
+
+            // 判斷是否空堂：空字串 或 包含「備」字 = 空堂；包含 busyKeys = 有課；其他 = 空堂
+            isLessonFree(name, day, pIdx) {
+                const sched = this.getSchedule(name, day);
+                if (!sched) return false;
+                const content = sched[pIdx] ? sched[pIdx].trim() : "";
+                if (content === "" || content.includes("備")) return true;
+                return !CONFIG.busyKeys.some(k => content.includes(k));
+            }
+
+            // 計算當天課堂數量（只統計 type === 'lesson' 的時段）
+            getWorkload(name, day) {
+                const sched = this.getSchedule(name, day);
+                let count = 0;
+                if (!sched) return 0;
+                sched.forEach((c, idx) => {
+                    const p = CONFIG.PERIODS[idx];
+                    if (p.type === 'lesson' && !this.isLessonFree(name, day, idx)) count++;
+                });
+                return count;
+            }
+        }
+
+        // ============================================================
+        // App - 應用控制層
+        // ============================================================
+        class App {
+            constructor() {
+                this.db = new DataManager();
+                this.subAssignments = {};
+                this.init();
+            }
+
+            init() {
+                const tabs = document.getElementById('navTabs');
+                TAB_CONFIG.forEach(tab => {
+                    const b = document.createElement('button');
+                    b.className = "py-4 px-4 md:px-6 font-bold text-slate-500 transition-all border-b-2 border-transparent text-sm md:text-base whitespace-nowrap";
+                    b.id = `tab-btn-${tab.id}`;
+                    b.innerHTML = `<i class="fa-solid ${tab.icon} mr-2"></i> ${tab.label}`;
+                    b.onclick = () => this.switchTab(tab.id);
+                    tabs.appendChild(b);
+                });
+
+                this.populateSelect('f1-day', CONFIG.DAYS);
+                this.populateSelect('f1-period', CONFIG.PERIODS.map(p => `${p.label} (${p.time})`));
+                this.populateSelect('f2-teacher', this.db.teachers.map(x => x.displayName), this.db.teachers.map(x => x.name));
+                this.populateSelect('f2-day', CONFIG.DAYS);
+                this.populateSelect('f4-day', CONFIG.DAYS);
+                this.populateSelect('f4-period', CONFIG.PERIODS.map(p => `${p.label} (${p.time})`));
+                this.populateSelect('f5-teacher', this.db.teachers.map(x => x.displayName), this.db.teachers.map(x => x.name));
+                this.populateSelect('f3-day', CONFIG.DAYS);
+
+                const list = document.getElementById('f3-teacher-list');
+                this.db.teachers.forEach(t => {
+                    const l = document.createElement('label');
+                    l.className = "flex items-center gap-2 p-2 bg-white rounded border cursor-pointer hover:bg-indigo-50 transition shadow-sm";
+                    l.innerHTML = `<input type="checkbox" name="f3-t" value="${t.name}"> <span class="text-xs font-bold">${t.displayName}</span>`;
+                    list.appendChild(l);
+                });
+
+                const subP = document.getElementById('f5-periods-select');
+                CONFIG.PERIODS.forEach(p => {
+                    const l = document.createElement('label');
+                    l.className = "flex items-center gap-2 p-2 bg-white rounded border cursor-pointer hover:bg-red-50 transition shadow-sm";
+                    l.innerHTML = `<input type="checkbox" name="f5-p" value="${p.key}" checked> <span class="text-xs font-bold">${p.label}</span>`;
+                    subP.appendChild(l);
+                });
+
+                document.getElementById('f5-date').valueAsDate = new Date();
+                this.switchTab('section-overview');
+            }
+
+            switchTab(id) {
+                document.querySelectorAll('.feature-section').forEach(s => s.classList.add('hidden'));
+                document.querySelectorAll('#navTabs button').forEach(b => b.classList.remove('tab-active'));
+                const target = document.getElementById(id);
+                if (target) target.classList.remove('hidden');
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (btn) btn.classList.add('tab-active');
+            }
+
+            populateSelect(id, items, values = null) {
+                const s = document.getElementById(id);
+                if (!s) return;
+                s.innerHTML = "";
+                items.forEach((item, idx) => {
+                    const o = document.createElement('option');
+                    o.value = values ? values[idx] : item;
+                    o.text = item;
+                    s.add(o);
+                });
+            }
+
+            showTeacherTimetable() {
+                const name = document.getElementById('f2-teacher').value;
+                const day = document.getElementById('f2-day').value;
+                const sched = this.db.getSchedule(name, day);
+                const container = document.getElementById('f2-result');
+                if (!sched) return;
+                let h = `<table class="w-full border shadow-sm rounded-xl overflow-hidden"><thead class="bg-slate-100 text-slate-600"><tr><th class="p-4 text-left">時段</th><th class="p-4 text-left">時間</th><th class="p-4 text-left">內容</th><th class="p-4 text-left">類別</th></tr></thead><tbody class="divide-y">`;
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    const val = sched[idx] || "";
+                    const isBusy = val !== "" && !val.includes("備");
+                    h += `<tr class="${isBusy ? 'bg-white' : 'bg-slate-50/50'}"><td class="p-4 font-bold text-slate-700">${p.label}</td><td class="p-4 text-slate-400 text-sm">${p.time}</td><td class="p-4 font-bold ${isBusy ? 'text-blue-700' : 'text-slate-400'}">${val || '---'}</td><td class="p-4 text-xs font-bold text-slate-300 uppercase">${p.type}</td></tr>`;
+                });
+                h += `</tbody></table>`;
+                container.innerHTML = h;
+            }
+
+            findFreeTeachers() {
+                const day = document.getElementById('f1-day').value;
+                const pLabel = document.getElementById('f1-period').value;
+                const pIdx = CONFIG.PERIODS.findIndex(p => `${p.label} (${p.time})` === pLabel);
+                const container = document.getElementById('f1-result');
+                container.innerHTML = "";
+                const freeList = this.db.teachers.filter(t => this.db.isLessonFree(t.name, day, pIdx));
+                if (!freeList.length) {
+                    container.innerHTML = `<div class="col-span-full p-10 text-center text-slate-400 bg-white rounded-xl border">此時段無空堂教師</div>`;
+                    return;
+                }
+                freeList.forEach(t => {
+                    const sched = this.db.getSchedule(t.name, day);
+                    const currentContent = (sched && sched[pIdx]) ? sched[pIdx] : "完全空堂";
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl border-l-4 border-green-500 shadow-sm hover:shadow-md transition";
+                    card.innerHTML = `<div class="font-bold text-slate-800">代號: ${t.displayName}</div><div class="text-xs text-slate-400 mt-1 italic">${currentContent}</div>`;
+                    container.appendChild(card);
+                });
+            }
+
+            findDuties() {
+                const day = document.getElementById('f4-day').value;
+                const pLabel = document.getElementById('f4-period').value;
+                const pIdx = CONFIG.PERIODS.findIndex(p => `${p.label} (${p.time})` === pLabel);
+                const container = document.getElementById('f4-result');
+                container.innerHTML = "";
+                const group = {};
+                this.db.teachers.forEach(t => {
+                    const sched = this.db.getSchedule(t.name, day);
+                    const val = (sched && sched[pIdx]) ? sched[pIdx].trim() : "";
+                    if (val !== "" && !val.includes("備")) {
+                        if (!group[val]) group[val] = [];
+                        group[val].push(t.displayName);
+                    }
+                });
+                if (Object.keys(group).length === 0) {
+                    container.innerHTML = `<div class="col-span-full p-10 text-center text-slate-400">此時段無具體職務紀錄</div>`;
+                    return;
+                }
+                for (const [duty, list] of Object.entries(group)) {
+                    const d = document.createElement('div');
+                    d.className = "bg-teal-50 border border-teal-100 p-5 rounded-2xl shadow-sm";
+                    d.innerHTML = `<div class="font-bold text-teal-800 mb-2 border-b border-teal-200 pb-2">${duty}</div><div class="flex flex-wrap gap-2">${list.map(n => `<span class="bg-white px-3 py-1 rounded-lg text-sm border border-teal-200 font-bold shadow-xs">${n}</span>`).join('')}</div>`;
+                    container.appendChild(d);
+                }
+            }
+
+            findCommonFree() {
+                const selected = Array.from(document.querySelectorAll('input[name="f3-t"]:checked')).map(i => i.value);
+                const day = document.getElementById('f3-day').value;
+                const container = document.getElementById('f3-result');
+                if (selected.length < 2) return this.showMessage("請至少選擇兩位代號教師", "error");
+                const freeSlots = CONFIG.PERIODS.filter((p, idx) => selected.every(name => this.db.isLessonFree(name, day, idx)));
+                if (!freeSlots.length) {
+                    container.innerHTML = `<div class="p-10 bg-red-50 text-red-600 rounded-2xl text-center">所選代號無共同空堂</div>`;
+                    return;
+                }
+                container.innerHTML = `<h3 class="font-bold mb-4 text-indigo-900">共同空堂 (${freeSlots.length}):</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${freeSlots.map(s => `<div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 flex flex-col"><span class="font-bold text-indigo-700">${s.label}</span><span class="text-xs text-indigo-400">${s.time}</span></div>`).join('')}</div>`;
+            }
+
+            generateSubRecommendations() {
+                const absent = document.getElementById('f5-teacher').value;
+                const dateIn = document.getElementById('f5-date').value;
+                if (!dateIn) return this.showMessage("請選擇日期", "error");
+                const day = CONFIG.DAYS[new Date(dateIn).getDay() - 1];
+                if (!day) return this.showMessage("週六/日無需代課", "error");
+
+                const selectedPKeys = Array.from(document.querySelectorAll('input[name="f5-p"]:checked')).map(i => i.value);
+                const workspace = document.getElementById('f5-workspace');
+                workspace.innerHTML = "";
+                workspace.classList.remove('hidden');
+
+                const absentSched = this.db.getSchedule(absent, day);
+                selectedPKeys.forEach(pkey => {
+                    const pIdx = CONFIG.PERIODS.findIndex(p => p.key === pkey);
+                    const pInfo = CONFIG.PERIODS[pIdx];
+                    const isActuallyFree = this.db.isLessonFree(absent, day, pIdx);
+                    const content = (absentSched && absentSched[pIdx]) ? absentSched[pIdx] : "";
+                    const block = document.createElement('div');
+                    block.className = `p-6 rounded-2xl border-2 transition ${isActuallyFree ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-white border-red-50 shadow-md'}`;
+                    if (isActuallyFree) {
+                        block.innerHTML = `<div class="flex justify-between items-center"><div><span class="bg-slate-300 text-white text-xs font-bold px-2 py-1 rounded mr-2 uppercase">${pInfo.label}</span><span class="font-bold text-slate-400 italic">空堂 / 備課 (無需代課)</span></div><i class="fa-solid fa-mug-hot text-slate-200"></i></div>`;
+                    } else {
+                        block.innerHTML = `<div class="flex justify-between items-center mb-6 border-b pb-4"><div><span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mr-2 uppercase">${pInfo.label}</span><span class="font-bold text-slate-800 text-lg">${content}</span></div><div class="text-xs font-bold text-red-400" id="status-${pkey}"><i class="fa-solid fa-triangle-exclamation"></i> 未指派</div></div><div id="cand-${pkey}" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>`;
+                    }
+                    workspace.appendChild(block);
+                    if (!isActuallyFree) this.renderCandidates(day, pIdx, pkey);
+                });
+
+                const btnContainer = document.createElement('div');
+                btnContainer.className = "pt-12 text-center";
+                btnContainer.innerHTML = `<button onclick="app.downloadReceipt()" class="bg-slate-900 hover:bg-black text-white px-12 py-4 rounded-2xl font-bold shadow-2xl transition flex items-center justify-center gap-3 mx-auto text-lg transform hover:scale-105"><i class="fa-solid fa-file-invoice"></i> 下載代課指派單 (代號版)</button>`;
+                workspace.appendChild(btnContainer);
+            }
+
+            renderCandidates(day, pIdx, pkey) {
+                const absent = document.getElementById('f5-teacher').value;
+                const container = document.getElementById(`cand-${pkey}`);
+                const cands = this.db.teachers
+                    .filter(t => t.name !== absent && this.db.isLessonFree(t.name, day, pIdx))
+                    .map(t => ({ name: t.name, displayName: t.displayName, load: this.db.getWorkload(t.name, day) }))
+                    .sort((a, b) => a.load - b.load);
+
+                if (!cands.length) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic">此時段暫無空堂教師</p>`;
+                    return;
+                }
+                container.innerHTML = cands.map(c => `
+                    <button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="flex flex-col items-center p-3 border-2 rounded-xl transition ${this.subAssignments[pkey] === c.name ? 'bg-blue-600 text-white border-blue-800 shadow-inner' : 'bg-white text-slate-600 border-slate-100 hover:bg-blue-50'}">
+                        <span class="text-sm font-bold">${c.displayName}</span>
+                        <span class="text-[10px] opacity-60">今日課量: ${c.load}節</span>
+                    </button>
+                `).join('');
+
+                const status = document.getElementById(`status-${pkey}`);
+                if (this.subAssignments[pkey]) {
+                    const assignedTeacher = this.db.teachers.find(t => t.name === this.subAssignments[pkey]);
+                    status.innerHTML = `<i class="fa-solid fa-circle-check"></i> 已指派: ${assignedTeacher.displayName}`;
+                    status.className = "text-xs font-bold text-green-600";
+                }
+            }
+
+            toggleAssign(pkey, name) {
+                this.subAssignments[pkey] = (this.subAssignments[pkey] === name) ? null : name;
+                this.generateSubRecommendations();
+                this.showMessage(this.subAssignments[pkey] ? `已指派代號教師 ${this.subAssignments[pkey]}` : "已取消指派", "success");
+            }
+
+            toggleAllSubPeriods(checked) {
+                document.querySelectorAll('input[name="f5-p"]').forEach(i => i.checked = checked);
+            }
+
+            downloadReceipt() {
+                const absent = document.getElementById('f5-teacher').value;
+                const dateIn = document.getElementById('f5-date').value;
+                const day = CONFIG.DAYS[new Date(dateIn).getDay() - 1];
+                const absentSched = this.db.getSchedule(absent, day);
+                const selectedPKeys = Array.from(document.querySelectorAll('input[name="f5-p"]:checked')).map(i => i.value);
+
+                let rowsHtml = "";
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    if (!selectedPKeys.includes(p.key)) return;
+                    const original = (absentSched && absentSched[idx]) ? absentSched[idx] : "---";
+                    const isActuallyFree = this.db.isLessonFree(absent, day, idx);
+                    const subTeacher = this.subAssignments[p.key] || (isActuallyFree ? "無需代課" : "尚未指派");
+                    rowsHtml += `<tr><td style="padding:10px; border:1px solid #000; text-align:center;">${p.label}</td><td style="padding:10px; border:1px solid #000; text-align:center;">${p.time}</td><td style="padding:10px; border:1px solid #000;">${original}</td><td style="padding:10px; border:1px solid #000; text-align:center; font-weight:bold; ${subTeacher === '尚未指派' ? 'color:red;' : ''}">${subTeacher}</td><td style="padding:10px; border:1px solid #000;"></td></tr>`;
+                });
+
+                const receiptHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>代課指派通知單 (代號版)</title><style>body{font-family:sans-serif;padding:30px;}.header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background-color:#f2f2f2;}.footer{margin-top:40px;display:flex;justify-content:space-between;}</style></head><body><div class="header"><h1>代課指派通知單 (簽收用)</h1></div><p><strong>請假教師：</strong> ${absent} (代號) &nbsp;&nbsp;&nbsp; <strong>日期：</strong> ${dateIn} (${day})</p><table><thead><tr><th style="border:1px solid #000; padding:10px;">節次</th><th style="border:1px solid #000; padding:10px;">時間時段</th><th style="border:1px solid #000; padding:10px;">原任內容</th><th style="border:1px solid #000; padding:10px;">代課教師 (代號)</th><th style="border:1px solid #000; padding:10px; width:100px;">簽署確認</th></tr></thead><tbody>${rowsHtml}</tbody></table><div class="footer"><p>教務主任：_____________________</p><p>日期：${new Date().toLocaleDateString('zh-HK')}</p></div><div style="margin-top:30px; text-align:center;"><button onclick="window.print()" style="padding:10px 20px; cursor:pointer;">列印此通知單</button></div></body></html>`;
+                const blob = new Blob([receiptHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `代課指派單_${absent}_${dateIn}.html`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            showMessage(m, t) {
+                const c = document.getElementById('toast-container');
+                const d = document.createElement('div');
+                const bg = t === 'success' ? 'bg-green-600' : 'bg-red-600';
+                d.className = `${bg} text-white px-6 py-4 rounded-xl shadow-2xl toast-enter flex items-center gap-3`;
+                d.innerHTML = `<i class="fa-solid ${t === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${m}</span>`;
+                c.appendChild(d);
+                setTimeout(() => { d.classList.add('toast-exit-active'); setTimeout(() => d.remove(), 300); }, 3000);
+            }
+        }
+
+        const app = new App();
+        document.getElementById('f2-teacher').onchange = () => app.showTeacherTimetable();
+        document.getElementById('f2-day').onchange = () => app.showTeacherTimetable();
+        app.showTeacherTimetable();
+    </script>
+</body>
+</html>
