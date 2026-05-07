@@ -184,7 +184,7 @@
         <section id="section-duties" class="feature-section hidden">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-teal-100">
                 <h2 class="text-xl font-bold mb-6 text-teal-800 flex items-center gap-2">
-                    <i class="fa-solid fa-building-shield"></i> 各時段職務一覽
+                    <i class="fa-solid fa-building-shield"></i> 當值及職務查詢
                 </h2>
 
                 <!-- Day Selector -->
@@ -276,42 +276,7 @@
 
 
         <!-- Tab: Duty Schedule -->
-        <section id="section-duty" class="feature-section hidden">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-100">
-                <h2 class="text-xl font-bold mb-6 text-purple-800 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved"></i> 當值安排
-                </h2>
 
-                <!-- Period Selector -->
-                <div class="flex flex-wrap gap-2 mb-4" id="duty-period-btns">
-                    <button onclick="app.setDutyPeriod('早會')" id="duty-btn-早會" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">早會</button>
-                    <button onclick="app.setDutyPeriod('小息一')" id="duty-btn-小息一" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息一 (10:00)</button>
-                    <button onclick="app.setDutyPeriod('小息二')" id="duty-btn-小息二" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息二 (12:00)</button>
-                    <button onclick="app.setDutyPeriod('午膳')" id="duty-btn-午膳" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">午膳 (13:10)</button>
-                    <button onclick="app.setDutyPeriod('小息三')" id="duty-btn-小息三" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息三 (13:55)</button>
-                </div>
-
-                <!-- Day Selector -->
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button onclick="app.setDutyDay('Mon')" id="duty-btn-Mon" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期一</button>
-                    <button onclick="app.setDutyDay('Tue')" id="duty-btn-Tue" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期二</button>
-                    <button onclick="app.setDutyDay('Wed')" id="duty-btn-Wed" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期三</button>
-                    <button onclick="app.setDutyDay('Thu')" id="duty-btn-Thu" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期四</button>
-                    <button onclick="app.setDutyDay('Fri')" id="duty-btn-Fri" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期五</button>
-                </div>
-
-                <!-- Rainy Day Toggle (小息一 only) -->
-                <div id="duty-rainy-toggle" class="hidden flex flex-wrap gap-2 mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                    <span class="text-sm font-bold text-blue-700 self-center mr-2"><i class="fa-solid fa-cloud-sun-rain"></i> 天氣安排：</span>
-                    <button onclick="app.setDutyVariant('晴天')" id="duty-btn-晴天" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">☀️ 晴天（正常）</button>
-                    <button onclick="app.setDutyVariant('雨天上學期')" id="duty-btn-雨天上學期" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">🌧 雨天（2月前）</button>
-                    <button onclick="app.setDutyVariant('雨天下學期')" id="duty-btn-雨天下學期" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">🌧 雨天（2月後）</button>
-                </div>
-
-                <!-- Duty Roster Display -->
-                <div id="duty-result" class="mt-2"></div>
-            </div>
-        </section>
 
     </main>
 
@@ -406,10 +371,9 @@
             { id: 'section-overview',  label: '學校概覽',        icon: 'fa-school' },
             { id: 'section-timetable', label: '教師課表',        icon: 'fa-clock-rotate-left' },
             { id: 'section-free',      label: '查詢空堂老師',    icon: 'fa-user-check' },
-            { id: 'section-duties',    label: '查詢教師職務',    icon: 'fa-building-shield' },
+            { id: 'section-duties',    label: '當值及職務查詢',  icon: 'fa-building-shield' },
             { id: 'section-common',    label: '共同空堂分析',    icon: 'fa-users-viewfinder' },
-            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' },
-            { id: 'section-duty',      label: '當值安排',        icon: 'fa-shield-halved' }
+            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' }
         ];
 
         const teachersRaw = [
@@ -790,112 +754,9 @@
         }
 
 
-        // ── Duty schedule state
-        App.prototype.dutyState = { period: '小息一', day: 'Mon', variant: '晴天' };
+        // ── Duty schedule state (setDutyPeriod/Day/Variant removed — merged into 當值及職務查詢)
 
-        App.prototype.setDutyPeriod = function(period) {
-            this.dutyState.period = period;
-            this.renderDuty();
-        };
-        App.prototype.setDutyDay = function(day) {
-            this.dutyState.day = day;
-            this.renderDuty();
-        };
-        App.prototype.setDutyVariant = function(variant) {
-            this.dutyState.variant = variant;
-            this.renderDuty();
-        };
 
-        App.prototype.renderDuty = function() {
-            const { period, day, variant } = this.dutyState;
-
-            // Update period buttons
-            document.querySelectorAll('.duty-period-btn').forEach(b => {
-                b.className = 'duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-slate-200 text-slate-600 hover:bg-purple-50';
-            });
-            const activeP = document.getElementById('duty-btn-' + period);
-            if (activeP) activeP.className = 'duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-purple-600 bg-purple-600 text-white';
-
-            // Update day buttons
-            document.querySelectorAll('.duty-day-btn').forEach(b => {
-                b.className = 'duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-slate-200 text-slate-600 hover:bg-purple-50';
-            });
-            const activeD = document.getElementById('duty-btn-' + day);
-            if (activeD) activeD.className = 'duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-purple-600 bg-purple-600 text-white';
-
-            // Show/hide rainy toggle
-            const rainyDiv = document.getElementById('duty-rainy-toggle');
-            rainyDiv.classList.toggle('hidden', period !== '小息一');
-
-            // Update variant buttons
-            if (period === '小息一') {
-                document.querySelectorAll('.duty-variant-btn').forEach(b => {
-                    b.className = 'duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition border-blue-200 text-blue-700 hover:bg-blue-100';
-                });
-                const activeV = document.getElementById('duty-btn-' + variant);
-                if (activeV) activeV.className = 'duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition border-blue-600 bg-blue-600 text-white';
-            }
-
-            // Get data
-            let entries;
-            if (period === '小息一') {
-                entries = DUTY_DATA['小息一'][variant][day] || [];
-            } else {
-                entries = DUTY_DATA[period][day] || [];
-            }
-
-            const container = document.getElementById('duty-result');
-            if (!entries.length) {
-                container.innerHTML = '<div class="p-8 text-center text-slate-400">此時段無當值資料</div>';
-                return;
-            }
-
-            if (period === '午膳') {
-                // Group by grade
-                const grades = ['1','2','3','4','5','6'];
-                let html = '<div class="space-y-4">';
-                grades.forEach(g => {
-                    const cls = entries.filter(e => e.cls && e.cls[0] === g);
-                    if (!cls.length) return;
-                    html += '<div>';
-                    html += '<h3 class="font-bold text-slate-700 mb-2 text-sm">小' + (['一','二','三','四','五','六'][parseInt(g)-1]) + '</h3>';
-                    html += '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">';
-                    cls.forEach(e => {
-                        const t = e.teachers.join(' / ') || '—';
-                        html += '<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col items-center text-center">';
-                        html += '<div class="font-bold text-amber-900 text-sm">' + e.cls + '</div>';
-                        html += '<div class="text-amber-700 font-bold mt-1">' + t + '</div>';
-                        html += '</div>';
-                    });
-                    html += '</div></div>';
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            } else {
-                // Position cards
-                const colors = {
-                    '早會': 'bg-indigo-50 border-indigo-200 text-indigo-800',
-                    '小息一': 'bg-green-50 border-green-200 text-green-800',
-                    '小息二': 'bg-sky-50 border-sky-200 text-sky-800',
-                    '小息三': 'bg-rose-50 border-rose-200 text-rose-800',
-                };
-                const col = colors[period] || 'bg-slate-50 border-slate-200 text-slate-800';
-                let html = '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">';
-                entries.forEach(e => {
-                    html += '<div class="' + col + ' border rounded-2xl p-3 flex flex-col">';
-                    html += '<div class="text-xs font-medium opacity-70 mb-1">' + (e.pos || '') + '</div>';
-                    html += '<div class="text-lg font-bold">' + (e.teacher || '—') + '</div>';
-                    html += '</div>';
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            }
-        };
-
-        App.prototype._initDuty = function() {
-            // Set initial active states
-            this.setDutyPeriod('小息一');
-        };
 
         // ── 查詢教師職務 (duties tab) ────────────────────────────────────────
 
@@ -1108,7 +969,7 @@
             let h = `<div class="mt-6 overflow-x-auto">
                 <h3 class="font-bold text-slate-700 mb-3 flex items-center gap-2 text-sm">
                     <i class="fa-solid fa-shield-halved text-purple-500"></i> 本週當值安排
-                    <span class="text-xs text-slate-400 font-normal ml-1">（小息一顯示晴天崗位，雨天見「當值安排」分頁）</span>
+                    <span class="text-xs text-slate-400 font-normal ml-1">（小息一顯示晴天崗位，雨天切換見「當值及職務查詢」分頁）</span>
                 </h3>
                 <table class="w-full border shadow-sm rounded-xl overflow-hidden text-sm">
                 <thead class="bg-slate-100 text-slate-600"><tr>
@@ -1180,7 +1041,6 @@
 
 
         const app = new App();
-        app._initDuty();
         app.initDutiesTab();
         document.getElementById('f2-teacher').onchange = () => app.showTeacherTimetable();
         app.showTeacherTimetable();
