@@ -249,6 +249,45 @@
             </div>
         </section>
 
+
+        <!-- Tab: Duty Schedule -->
+        <section id="section-duty" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-purple-100">
+                <h2 class="text-xl font-bold mb-6 text-purple-800 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> 當值安排
+                </h2>
+
+                <!-- Period Selector -->
+                <div class="flex flex-wrap gap-2 mb-4" id="duty-period-btns">
+                    <button onclick="app.setDutyPeriod('早會')" id="duty-btn-早會" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">早會</button>
+                    <button onclick="app.setDutyPeriod('小息一')" id="duty-btn-小息一" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息一 (10:00)</button>
+                    <button onclick="app.setDutyPeriod('小息二')" id="duty-btn-小息二" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息二 (12:00)</button>
+                    <button onclick="app.setDutyPeriod('午膳')" id="duty-btn-午膳" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">午膳 (13:10)</button>
+                    <button onclick="app.setDutyPeriod('小息三')" id="duty-btn-小息三" class="duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">小息三 (13:55)</button>
+                </div>
+
+                <!-- Day Selector -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="app.setDutyDay('Mon')" id="duty-btn-Mon" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期一</button>
+                    <button onclick="app.setDutyDay('Tue')" id="duty-btn-Tue" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期二</button>
+                    <button onclick="app.setDutyDay('Wed')" id="duty-btn-Wed" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期三</button>
+                    <button onclick="app.setDutyDay('Thu')" id="duty-btn-Thu" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期四</button>
+                    <button onclick="app.setDutyDay('Fri')" id="duty-btn-Fri" class="duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition">星期五</button>
+                </div>
+
+                <!-- Rainy Day Toggle (小息一 only) -->
+                <div id="duty-rainy-toggle" class="hidden flex flex-wrap gap-2 mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                    <span class="text-sm font-bold text-blue-700 self-center mr-2"><i class="fa-solid fa-cloud-sun-rain"></i> 天氣安排：</span>
+                    <button onclick="app.setDutyVariant('晴天')" id="duty-btn-晴天" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">☀️ 晴天（正常）</button>
+                    <button onclick="app.setDutyVariant('雨天上學期')" id="duty-btn-雨天上學期" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">🌧 雨天（2月前）</button>
+                    <button onclick="app.setDutyVariant('雨天下學期')" id="duty-btn-雨天下學期" class="duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition">🌧 雨天（2月後）</button>
+                </div>
+
+                <!-- Duty Roster Display -->
+                <div id="duty-result" class="mt-2"></div>
+            </div>
+        </section>
+
     </main>
 
     <footer class="bg-slate-900 text-slate-500 text-center py-6 text-sm mt-auto no-print">
@@ -282,13 +321,68 @@
             busyKeys: ["1A","1B","1C","1D","2A","2B","2C","2D","3A","3B","3C","3D","3E","4A","4B","4C","4D","5A","5B","5C","5D","5E","6A","6B","6C","6D","6E","人文","數學","英文","常識","中文","科學","普通話","音樂","體育","視藝","電腦","佛學","圖書","國學","創科","毛筆","NET","多元"]
         };
 
+        const DUTY_DATA = {
+            "早會": {
+                "Mon": [{"pos": "1樓A", "teacher": "偉"}, {"pos": "2樓A", "teacher": "倫"}, {"pos": "2樓B", "teacher": "S"}, {"pos": "3樓", "teacher": "陳"}, {"pos": "4樓", "teacher": "詩"}, {"pos": "5樓A", "teacher": "豪"}, {"pos": "5樓B", "teacher": "基"}, {"pos": "6樓A", "teacher": "鋒"}, {"pos": "6樓B", "teacher": "熙"}, {"pos": "巡視", "teacher": "錦"}],
+                "Tue": [{"pos": "1樓A", "teacher": "倫"}, {"pos": "2樓A", "teacher": "琪"}, {"pos": "2樓B", "teacher": "陳"}, {"pos": "3樓", "teacher": "彤"}, {"pos": "4樓", "teacher": "豪"}, {"pos": "5樓A", "teacher": "基"}, {"pos": "5樓B", "teacher": "鋒"}, {"pos": "6樓A", "teacher": "熙"}],
+                "Wed": [{"pos": "1樓A", "teacher": "倫"}, {"pos": "2樓A", "teacher": "S"}, {"pos": "2樓B", "teacher": "詩"}, {"pos": "3樓", "teacher": "洋"}, {"pos": "4樓", "teacher": "豪"}, {"pos": "5樓A", "teacher": "基"}, {"pos": "5樓B", "teacher": "貞"}, {"pos": "6樓A", "teacher": "彤"}],
+                "Thu": [{"pos": "1樓A", "teacher": "倫"}, {"pos": "2樓A", "teacher": "琪"}, {"pos": "2樓B", "teacher": "陳"}, {"pos": "3樓", "teacher": "洋"}, {"pos": "4樓", "teacher": "豪"}, {"pos": "5樓A", "teacher": "基"}, {"pos": "5樓B", "teacher": "貞"}, {"pos": "6樓A", "teacher": "彤"}],
+                "Fri": [{"pos": "1樓A", "teacher": "鋒"}, {"pos": "2樓A", "teacher": "S"}, {"pos": "2樓B", "teacher": "詩"}, {"pos": "3樓", "teacher": "洋"}, {"pos": "4樓", "teacher": "豪"}, {"pos": "5樓A", "teacher": "琪"}, {"pos": "5樓B", "teacher": "貞"}, {"pos": "6樓A", "teacher": "熙"}],
+            },
+            "小息一": {
+                "晴天": {
+                    "Mon": [{"pos": "崗位1 國學中心（持咪）", "teacher": "源"}, {"pos": "崗位2 國學中心", "teacher": "櫻/敏"}, {"pos": "崗位3 乒乓球台", "teacher": "馬"}, {"pos": "崗位4 後跑道A", "teacher": "暖"}, {"pos": "崗位5 後跑道B", "teacher": "知"}, {"pos": "崗位6 跳飛機/停車場", "teacher": "珏"}, {"pos": "崗位7 籃球場A", "teacher": "健"}, {"pos": "崗位8 籃球場B", "teacher": "詩"}, {"pos": "崗位9 五感區", "teacher": "鏘"}, {"pos": "崗位10 大堂", "teacher": "曉"}, {"pos": "崗位11 AI運動", "teacher": "秀"}, {"pos": "崗位12 圖書館", "teacher": "方"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "梁"}, {"pos": "崗位15 1樓A", "teacher": "凌"}, {"pos": "崗位16 1樓B", "teacher": "琪"}, {"pos": "崗位17 單車區", "teacher": "倫"}, {"pos": "崗位18 2-3樓", "teacher": "馮"}, {"pos": "崗位19 CoL (2F)", "teacher": "彤"}, {"pos": "崗位20 CoS (6F)", "teacher": "子"}, {"pos": "崗位21 4樓", "teacher": "偉"}, {"pos": "崗位22 5-6樓", "teacher": "譚"}],
+                    "Tue": [{"pos": "崗位1 國學中心（持咪）", "teacher": "貞"}, {"pos": "崗位2 國學中心", "teacher": "李"}, {"pos": "崗位3 乒乓球台", "teacher": "珊"}, {"pos": "崗位4 後跑道A", "teacher": "知"}, {"pos": "崗位5 後跑道B", "teacher": "熊"}, {"pos": "崗位6 跳飛機/停車場", "teacher": "鋒"}, {"pos": "崗位7 籃球場A", "teacher": "鏘"}, {"pos": "崗位8 籃球場B", "teacher": "基"}, {"pos": "崗位9 五感區", "teacher": "雪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "愛"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "S"}, {"pos": "崗位14 英語室", "teacher": "陳"}, {"pos": "崗位15 1樓A", "teacher": "健"}, {"pos": "崗位16 1樓B", "teacher": "馮"}, {"pos": "崗位17 單車區", "teacher": "婷"}, {"pos": "崗位18 2-3樓", "teacher": "嘉"}, {"pos": "崗位19 CoL (2F)", "teacher": "熙"}, {"pos": "崗位20 CoS (6F)", "teacher": "柔"}],
+                    "Wed": [{"pos": "崗位1 國學中心（持咪）", "teacher": "玲"}, {"pos": "崗位2 國學中心", "teacher": "琪"}, {"pos": "崗位3 乒乓球台", "teacher": "梁"}, {"pos": "崗位4 後跑道A", "teacher": "知"}, {"pos": "崗位5 後跑道B", "teacher": "鏘"}, {"pos": "崗位6 跳飛機/停車場", "teacher": "源"}, {"pos": "崗位7 籃球場A", "teacher": "鋒"}, {"pos": "崗位8 籃球場B", "teacher": "倫"}, {"pos": "崗位9 五感區", "teacher": "紫"}, {"pos": "崗位10 大堂", "teacher": "張"}, {"pos": "崗位11 AI運動", "teacher": "方"}, {"pos": "崗位12 圖書館", "teacher": "珠"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "莊"}, {"pos": "崗位15 1樓A", "teacher": "蘇"}, {"pos": "崗位16 1樓B", "teacher": "熙"}, {"pos": "崗位17 單車區", "teacher": "柔"}, {"pos": "崗位18 2-3樓", "teacher": "彤"}, {"pos": "崗位19 CoL (2F)", "teacher": "詩"}, {"pos": "崗位20 CoS (6F)", "teacher": "貞"}, {"pos": "崗位21 4樓", "teacher": "譚"}],
+                    "Thu": [{"pos": "崗位1 國學中心（持咪）", "teacher": "珠"}, {"pos": "崗位2 國學中心", "teacher": "馬"}, {"pos": "崗位3 乒乓球台", "teacher": "開"}, {"pos": "崗位4 後跑道A", "teacher": "鄭"}, {"pos": "崗位5 後跑道B", "teacher": "珏"}, {"pos": "崗位6 跳飛機/停車場", "teacher": "健"}, {"pos": "崗位7 籃球場A", "teacher": "豪"}, {"pos": "崗位8 籃球場B", "teacher": "鏘"}, {"pos": "崗位9 五感區", "teacher": "馮"}, {"pos": "崗位10 大堂", "teacher": "駿"}, {"pos": "崗位11 AI運動", "teacher": "玲"}, {"pos": "崗位12 圖書館", "teacher": "S"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "陳"}, {"pos": "崗位14 英語室", "teacher": "張"}, {"pos": "崗位15 1樓A", "teacher": "倫"}, {"pos": "崗位16 1樓B", "teacher": "柔"}, {"pos": "崗位17 單車區", "teacher": "彤"}, {"pos": "崗位18 2-3樓", "teacher": "偉"}, {"pos": "崗位19 CoL (2F)", "teacher": "楹"}, {"pos": "崗位20 CoS (6F)", "teacher": "譚"}],
+                    "Fri": [{"pos": "崗位1 國學中心（持咪）", "teacher": "倫"}, {"pos": "崗位2 國學中心", "teacher": "安"}, {"pos": "崗位3 乒乓球台", "teacher": "S"}, {"pos": "崗位4 後跑道A", "teacher": "知"}, {"pos": "崗位5 後跑道B", "teacher": "珏"}, {"pos": "崗位6 跳飛機/停車場", "teacher": "健"}, {"pos": "崗位7 籃球場A", "teacher": "張"}, {"pos": "崗位8 籃球場B", "teacher": "成"}, {"pos": "崗位9 五感區", "teacher": "琪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "駿"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "袁"}, {"pos": "崗位14 英語室", "teacher": "如"}, {"pos": "崗位15 1樓A", "teacher": "基"}, {"pos": "崗位16 1樓B", "teacher": "馮"}, {"pos": "崗位17 單車區", "teacher": "珊"}, {"pos": "崗位18 2-3樓", "teacher": "子"}, {"pos": "崗位19 CoL (2F)", "teacher": "開"}, {"pos": "崗位20 CoS (6F)", "teacher": "柔"}],
+                },
+                "雨天上學期": {
+                    "Mon": [{"pos": "崗位1 國學中心（持咪）", "teacher": "源"}, {"pos": "崗位2 國學中心", "teacher": "櫻/敏"}, {"pos": "崗位3 乒乓球台", "teacher": "馬"}, {"pos": "崗位4 4D/507", "teacher": "暖"}, {"pos": "崗位5 4B/506", "teacher": "健"}, {"pos": "崗位6 5樓樓層", "teacher": "琪"}, {"pos": "崗位7 5A/B 504-505", "teacher": "知"}, {"pos": "崗位8 4C/503", "teacher": "詩"}, {"pos": "崗位9 5C/502", "teacher": "鏘"}, {"pos": "崗位10 大堂", "teacher": "曉"}, {"pos": "崗位11 AI運動", "teacher": "秀"}, {"pos": "崗位12 圖書館", "teacher": "方"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "梁"}, {"pos": "崗位15 1樓A", "teacher": "凌"}, {"pos": "崗位16 5D/501", "teacher": "珏"}, {"pos": "崗位17 5E/606", "teacher": "倫"}, {"pos": "崗位18 6A/B 604-605", "teacher": "馮"}, {"pos": "崗位19 6樓樓層", "teacher": "彤"}, {"pos": "崗位20 6C/603", "teacher": "子"}, {"pos": "崗位21 6D/602", "teacher": "譚"}, {"pos": "崗位22 6E/601", "teacher": "偉"}],
+                    "Tue": [{"pos": "崗位1 國學中心（持咪）", "teacher": "貞"}, {"pos": "崗位2 國學中心", "teacher": "李"}, {"pos": "崗位3 乒乓球台", "teacher": "珊"}, {"pos": "崗位4 4D/507", "teacher": "鋒"}, {"pos": "崗位5 4B/506", "teacher": "陳"}, {"pos": "崗位6 5樓樓層", "teacher": "知"}, {"pos": "崗位7 5A/B 504-505", "teacher": "鏘"}, {"pos": "崗位8 4C/503", "teacher": "基"}, {"pos": "崗位9 5C/502", "teacher": "雪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "愛"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "S"}, {"pos": "崗位14 英語室", "teacher": "熊"}, {"pos": "崗位15 1樓A", "teacher": "健"}, {"pos": "崗位16 5D/501", "teacher": "馮"}, {"pos": "崗位17 5E/606", "teacher": "婷"}, {"pos": "崗位18 6A/B 604-605", "teacher": "嘉"}, {"pos": "崗位19 6樓樓層", "teacher": "柔"}, {"pos": "崗位20 6C/603", "teacher": "熙"}],
+                    "Wed": [{"pos": "崗位1 國學中心（持咪）", "teacher": "玲"}, {"pos": "崗位2 國學中心", "teacher": "琪"}, {"pos": "崗位3 乒乓球台", "teacher": "梁"}, {"pos": "崗位4 4D/507", "teacher": "源"}, {"pos": "崗位5 4B/506", "teacher": "蘇"}, {"pos": "崗位6 5樓樓層", "teacher": "紫"}, {"pos": "崗位7 5A/B 504-505", "teacher": "鋒"}, {"pos": "崗位8 4C/503", "teacher": "倫"}, {"pos": "崗位9 5C/502", "teacher": "雪"}, {"pos": "崗位10 大堂", "teacher": "張"}, {"pos": "崗位11 AI運動", "teacher": "方"}, {"pos": "崗位12 圖書館", "teacher": "珠"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "莊"}, {"pos": "崗位15 1樓A", "teacher": "鏘"}, {"pos": "崗位16 5D/501", "teacher": "熙"}, {"pos": "崗位17 5E/606", "teacher": "柔"}, {"pos": "崗位18 6A/B 604-605", "teacher": "彤"}, {"pos": "崗位19 6樓樓層", "teacher": "詩"}, {"pos": "崗位20 6C/603", "teacher": "譚"}, {"pos": "崗位21 6D/602", "teacher": "貞"}],
+                    "Thu": [{"pos": "崗位1 國學中心（持咪）", "teacher": "珠"}, {"pos": "崗位2 國學中心", "teacher": "馬"}, {"pos": "崗位3 乒乓球台", "teacher": "開"}, {"pos": "崗位4 4D/507", "teacher": "健"}, {"pos": "崗位5 4B/506", "teacher": "張"}, {"pos": "崗位6 5樓樓層", "teacher": "鄭"}, {"pos": "崗位7 5A/B 504-505", "teacher": "豪"}, {"pos": "崗位8 4C/503", "teacher": "鏘"}, {"pos": "崗位9 5C/502", "teacher": "馮"}, {"pos": "崗位10 大堂", "teacher": "駿"}, {"pos": "崗位11 AI運動", "teacher": "玲"}, {"pos": "崗位12 圖書館", "teacher": "S"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "陳"}, {"pos": "崗位14 英語室", "teacher": "珏"}, {"pos": "崗位15 1樓A", "teacher": "倫"}, {"pos": "崗位16 5D/501", "teacher": "柔"}, {"pos": "崗位17 5E/606", "teacher": "彤"}, {"pos": "崗位18 6A/B 604-605", "teacher": "偉"}, {"pos": "崗位19 6樓樓層", "teacher": "譚"}, {"pos": "崗位20 6C/603", "teacher": "楹"}],
+                    "Fri": [{"pos": "崗位1 國學中心（持咪）", "teacher": "倫"}, {"pos": "崗位2 國學中心", "teacher": "安"}, {"pos": "崗位3 乒乓球台", "teacher": "S"}, {"pos": "崗位4 4D/507", "teacher": "健"}, {"pos": "崗位5 4B/506", "teacher": "如"}, {"pos": "崗位6 5樓樓層", "teacher": "知"}, {"pos": "崗位7 5A/B 504-505", "teacher": "張"}, {"pos": "崗位8 4C/503", "teacher": "成"}, {"pos": "崗位9 5C/502", "teacher": "琪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "駿"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "袁"}, {"pos": "崗位14 英語室", "teacher": "珏"}, {"pos": "崗位15 1樓A", "teacher": "基"}, {"pos": "崗位16 5D/501", "teacher": "馮"}, {"pos": "崗位17 5E/606", "teacher": "珊"}, {"pos": "崗位18 6A/B 604-605", "teacher": "子"}, {"pos": "崗位19 6樓樓層", "teacher": "柔"}, {"pos": "崗位20 6C/603", "teacher": "開"}],
+                },
+                "雨天下學期": {
+                    "Mon": [{"pos": "崗位1 國學中心（持咪）", "teacher": "源"}, {"pos": "崗位2 國學中心", "teacher": "櫻/敏"}, {"pos": "崗位3 乒乓球台", "teacher": "馬"}, {"pos": "崗位4 1A/206", "teacher": "暖"}, {"pos": "崗位5 1B/205", "teacher": "知"}, {"pos": "崗位6 1C/207", "teacher": "珏"}, {"pos": "崗位7 1D/204", "teacher": "健"}, {"pos": "崗位8 2A/B 203-201", "teacher": "詩"}, {"pos": "崗位9 2樓樓層", "teacher": "鏘"}, {"pos": "崗位10 大堂", "teacher": "曉"}, {"pos": "崗位11 AI運動", "teacher": "秀"}, {"pos": "崗位12 圖書館", "teacher": "方"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "梁"}, {"pos": "崗位15 1樓A", "teacher": "凌"}, {"pos": "崗位16 2C/201", "teacher": "琪"}, {"pos": "崗位17 2D/3A 307-306", "teacher": "倫"}, {"pos": "崗位18 3樓樓層", "teacher": "馮"}, {"pos": "崗位19 3B/305", "teacher": "彤"}, {"pos": "崗位20 3E/3C 407-406", "teacher": "子"}, {"pos": "崗位21 3D/4A 405-404", "teacher": "偉"}, {"pos": "崗位22 4樓樓層", "teacher": "譚"}],
+                    "Tue": [{"pos": "崗位1 國學中心（持咪）", "teacher": "貞"}, {"pos": "崗位2 國學中心", "teacher": "李"}, {"pos": "崗位3 乒乓球台", "teacher": "珊"}, {"pos": "崗位4 1A/206", "teacher": "知"}, {"pos": "崗位5 1B/205", "teacher": "熊"}, {"pos": "崗位6 1C/207", "teacher": "鋒"}, {"pos": "崗位7 1D/204", "teacher": "鏘"}, {"pos": "崗位8 2A/B 203-201", "teacher": "基"}, {"pos": "崗位9 2樓樓層", "teacher": "雪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "愛"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "S"}, {"pos": "崗位14 英語室", "teacher": "陳"}, {"pos": "崗位15 1樓A", "teacher": "健"}, {"pos": "崗位16 2C/201", "teacher": "馮"}, {"pos": "崗位17 2D/3A 307-306", "teacher": "婷"}, {"pos": "崗位18 3樓樓層", "teacher": "嘉"}, {"pos": "崗位19 3B/305", "teacher": "熙"}, {"pos": "崗位20 3E/3C 407-406", "teacher": "柔"}],
+                    "Wed": [{"pos": "崗位1 國學中心（持咪）", "teacher": "玲"}, {"pos": "崗位2 國學中心", "teacher": "琪"}, {"pos": "崗位3 乒乓球台", "teacher": "梁"}, {"pos": "崗位4 1A/206", "teacher": "紫"}, {"pos": "崗位5 1B/205", "teacher": "鏘"}, {"pos": "崗位6 1C/207", "teacher": "源"}, {"pos": "崗位7 1D/204", "teacher": "鋒"}, {"pos": "崗位8 2A/B 203-201", "teacher": "倫"}, {"pos": "崗位9 2樓樓層", "teacher": "雪"}, {"pos": "崗位10 大堂", "teacher": "張"}, {"pos": "崗位11 AI運動", "teacher": "方"}, {"pos": "崗位12 圖書館", "teacher": "珠"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "洋"}, {"pos": "崗位14 英語室", "teacher": "莊"}, {"pos": "崗位15 1樓A", "teacher": "蘇"}, {"pos": "崗位16 2C/201", "teacher": "熙"}, {"pos": "崗位17 2D/3A 307-306", "teacher": "柔"}, {"pos": "崗位18 3樓樓層", "teacher": "彤"}, {"pos": "崗位19 3B/305", "teacher": "詩"}, {"pos": "崗位20 3E/3C 407-406", "teacher": "貞"}, {"pos": "崗位21 3D/4A 405-404", "teacher": "譚"}],
+                    "Thu": [{"pos": "崗位1 國學中心（持咪）", "teacher": "珠"}, {"pos": "崗位2 國學中心", "teacher": "馬"}, {"pos": "崗位3 乒乓球台", "teacher": "開"}, {"pos": "崗位4 1A/206", "teacher": "鄭"}, {"pos": "崗位5 1B/205", "teacher": "珏"}, {"pos": "崗位6 1C/207", "teacher": "健"}, {"pos": "崗位7 1D/204", "teacher": "豪"}, {"pos": "崗位8 2A/B 203-201", "teacher": "鏘"}, {"pos": "崗位9 2樓樓層", "teacher": "馮"}, {"pos": "崗位10 大堂", "teacher": "駿"}, {"pos": "崗位11 AI運動", "teacher": "玲"}, {"pos": "崗位12 圖書館", "teacher": "S"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "陳"}, {"pos": "崗位14 英語室", "teacher": "張"}, {"pos": "崗位15 1樓A", "teacher": "倫"}, {"pos": "崗位16 2C/201", "teacher": "柔"}, {"pos": "崗位17 2D/3A 307-306", "teacher": "彤"}, {"pos": "崗位18 3樓樓層", "teacher": "偉"}, {"pos": "崗位19 3B/305", "teacher": "楹"}, {"pos": "崗位20 3E/3C 407-406", "teacher": "譚"}],
+                    "Fri": [{"pos": "崗位1 國學中心（持咪）", "teacher": "倫"}, {"pos": "崗位2 國學中心", "teacher": "安"}, {"pos": "崗位3 乒乓球台", "teacher": "S"}, {"pos": "崗位4 1A/206", "teacher": "知"}, {"pos": "崗位5 1B/205", "teacher": "珏"}, {"pos": "崗位6 1C/207", "teacher": "健"}, {"pos": "崗位7 1D/204", "teacher": "張"}, {"pos": "崗位8 2A/B 203-201", "teacher": "成"}, {"pos": "崗位9 2樓樓層", "teacher": "琪"}, {"pos": "崗位10 大堂", "teacher": "豪"}, {"pos": "崗位11 AI運動", "teacher": "倩"}, {"pos": "崗位12 圖書館", "teacher": "駿"}, {"pos": "崗位13 禮堂（持咪）", "teacher": "袁"}, {"pos": "崗位14 英語室", "teacher": "如"}, {"pos": "崗位15 1樓A", "teacher": "基"}, {"pos": "崗位16 2C/201", "teacher": "馮"}, {"pos": "崗位17 2D/3A 307-306", "teacher": "珊"}, {"pos": "崗位18 3樓樓層", "teacher": "子"}, {"pos": "崗位19 3B/305", "teacher": "開"}, {"pos": "崗位20 3E/3C 407-406", "teacher": "柔"}],
+                },
+            },
+            "小息二": {
+                "Mon": [{"pos": "2樓A", "teacher": "如"}, {"pos": "2樓B", "teacher": "熊"}, {"pos": "3樓A", "teacher": "安"}, {"pos": "4樓A", "teacher": "成"}, {"pos": "5樓A", "teacher": "嘉"}, {"pos": "5樓B", "teacher": "雪"}, {"pos": "6樓A", "teacher": "楹"}, {"pos": "6樓B", "teacher": "李"}],
+                "Tue": [{"pos": "2樓A", "teacher": "紫"}, {"pos": "2樓B", "teacher": "熊"}, {"pos": "3樓A", "teacher": "成"}, {"pos": "4樓A", "teacher": "芊"}, {"pos": "5樓A", "teacher": "鄭"}, {"pos": "5樓B", "teacher": "楹"}, {"pos": "6樓A", "teacher": "莊"}, {"pos": "6樓B", "teacher": "李"}],
+                "Wed": [{"pos": "2樓A", "teacher": "雅"}, {"pos": "2樓B", "teacher": "紫"}, {"pos": "3樓A", "teacher": "如"}, {"pos": "4樓A", "teacher": "熊"}, {"pos": "5樓A", "teacher": "暖"}, {"pos": "5樓B", "teacher": "愛"}, {"pos": "6樓A", "teacher": "雪"}, {"pos": "6樓B", "teacher": "秀"}],
+                "Thu": [{"pos": "2樓A", "teacher": "婷"}, {"pos": "2樓B", "teacher": "雅"}, {"pos": "3樓A", "teacher": "愛"}, {"pos": "4樓A", "teacher": "曉"}, {"pos": "5樓A", "teacher": "鄭"}, {"pos": "5樓B", "teacher": "袁"}, {"pos": "6樓A", "teacher": "凌"}, {"pos": "6樓B", "teacher": "蘇"}],
+                "Fri": [{"pos": "2樓A", "teacher": "暖"}, {"pos": "2樓B", "teacher": "安"}, {"pos": "3樓A", "teacher": "嘉"}, {"pos": "4樓A", "teacher": "袁"}, {"pos": "5樓A", "teacher": "凌"}, {"pos": "5樓B", "teacher": "秀"}, {"pos": "6樓A", "teacher": "蘇"}, {"pos": "6樓B", "teacher": "莊"}],
+            },
+            "午膳": {
+                "Mon": [{"cls": "1A", "teachers": ["琪", "知"]}, {"cls": "1B", "teachers": ["雅", "鏘"]}, {"cls": "1C", "teachers": ["馬", "柔"]}, {"cls": "1D", "teachers": ["馮", "張"]}, {"cls": "2A", "teachers": ["如"]}, {"cls": "2B", "teachers": ["方"]}, {"cls": "2C", "teachers": ["暖"]}, {"cls": "2D", "teachers": ["詩"]}, {"cls": "3A", "teachers": ["子"]}, {"cls": "3B", "teachers": ["愛"]}, {"cls": "3C", "teachers": ["倩"]}, {"cls": "3D", "teachers": ["嘉"]}, {"cls": "3E", "teachers": ["豪"]}, {"cls": "4A", "teachers": ["曉"]}, {"cls": "4B", "teachers": ["鄭"]}, {"cls": "4C", "teachers": ["袁"]}, {"cls": "4D", "teachers": ["楹"]}, {"cls": "5A", "teachers": ["珊"]}, {"cls": "5B", "teachers": ["駿"]}, {"cls": "5C", "teachers": ["珏"]}, {"cls": "5D", "teachers": ["開"]}, {"cls": "5E", "teachers": ["梁"]}, {"cls": "6A", "teachers": ["倫"]}, {"cls": "6B", "teachers": ["秀"]}, {"cls": "6C", "teachers": ["蘇"]}, {"cls": "6D", "teachers": ["莊"]}, {"cls": "6E", "teachers": ["李"]}],
+                "Tue": [{"cls": "1A", "teachers": ["婷", "鏘"]}, {"cls": "1B", "teachers": ["雅", "譚"]}, {"cls": "1C", "teachers": ["馬", "柔"]}, {"cls": "1D", "teachers": ["紫", "張"]}, {"cls": "2A", "teachers": ["馮"]}, {"cls": "2B", "teachers": ["熊"]}, {"cls": "2C", "teachers": ["陳"]}, {"cls": "2D", "teachers": ["安"]}, {"cls": "3A", "teachers": ["成"]}, {"cls": "3B", "teachers": ["愛"]}, {"cls": "3C", "teachers": ["芊"]}, {"cls": "3D", "teachers": ["嘉"]}, {"cls": "3E", "teachers": ["雪"]}, {"cls": "4A", "teachers": ["曉"]}, {"cls": "4B", "teachers": ["鄭"]}, {"cls": "4C", "teachers": ["偉"]}, {"cls": "4D", "teachers": ["楹"]}, {"cls": "5A", "teachers": ["珊"]}, {"cls": "5B", "teachers": ["駿"]}, {"cls": "5C", "teachers": ["珏"]}, {"cls": "5D", "teachers": ["錦"]}, {"cls": "5E", "teachers": ["熙"]}, {"cls": "6A", "teachers": ["凌"]}, {"cls": "6B", "teachers": ["基"]}, {"cls": "6C", "teachers": ["蘇"]}, {"cls": "6D", "teachers": ["子"]}, {"cls": "6E", "teachers": ["李"]}],
+                "Wed": [{"cls": "1A", "teachers": ["婷", "知"]}, {"cls": "1B", "teachers": ["馮", "譚"]}, {"cls": "1C", "teachers": ["基", "陳"]}, {"cls": "1D", "teachers": ["紫", "鏘"]}, {"cls": "2A", "teachers": ["如"]}, {"cls": "2B", "teachers": ["熊"]}, {"cls": "2C", "teachers": ["暖"]}, {"cls": "2D", "teachers": ["安"]}, {"cls": "3A", "teachers": ["成"]}, {"cls": "3B", "teachers": ["愛"]}, {"cls": "3C", "teachers": ["芊"]}, {"cls": "3D", "teachers": ["嘉"]}, {"cls": "3E", "teachers": ["雪"]}, {"cls": "4A", "teachers": ["曉"]}, {"cls": "4B", "teachers": ["鄭"]}, {"cls": "4C", "teachers": ["袁"]}, {"cls": "4D", "teachers": ["楹"]}, {"cls": "5A", "teachers": ["倫"]}, {"cls": "5B", "teachers": ["健"]}, {"cls": "5C", "teachers": ["珏"]}, {"cls": "5D", "teachers": ["開"]}, {"cls": "5E", "teachers": ["梁"]}, {"cls": "6A", "teachers": ["凌"]}, {"cls": "6B", "teachers": ["秀"]}, {"cls": "6C", "teachers": ["蘇"]}, {"cls": "6D", "teachers": ["莊"]}, {"cls": "6E", "teachers": ["洋"]}],
+                "Thu": [{"cls": "1A", "teachers": ["婷", "知"]}, {"cls": "1B", "teachers": ["雅", "譚"]}, {"cls": "1C", "teachers": ["馬", "柔"]}, {"cls": "1D", "teachers": ["紫", "張"]}, {"cls": "2A", "teachers": ["如"]}, {"cls": "2B", "teachers": ["熊"]}, {"cls": "2C", "teachers": ["暖"]}, {"cls": "2D", "teachers": ["安"]}, {"cls": "3A", "teachers": ["成"]}, {"cls": "3B", "teachers": ["基"]}, {"cls": "3C", "teachers": ["芊"]}, {"cls": "3D", "teachers": ["嘉"]}, {"cls": "3E", "teachers": ["雪"]}, {"cls": "4A", "teachers": ["鏘"]}, {"cls": "4B", "teachers": ["彤"]}, {"cls": "4C", "teachers": ["袁"]}, {"cls": "4D", "teachers": ["貞"]}, {"cls": "5A", "teachers": ["珊"]}, {"cls": "5B", "teachers": ["駿"]}, {"cls": "5C", "teachers": ["琪"]}, {"cls": "5D", "teachers": ["開"]}, {"cls": "5E", "teachers": ["梁"]}, {"cls": "6A", "teachers": ["凌"]}, {"cls": "6B", "teachers": ["秀"]}, {"cls": "6C", "teachers": ["陳"]}, {"cls": "6D", "teachers": ["莊"]}, {"cls": "6E", "teachers": ["李"]}],
+                "Fri": [{"cls": "1A", "teachers": ["婷", "知"]}, {"cls": "1B", "teachers": ["雅", "譚"]}, {"cls": "1C", "teachers": ["馬", "柔"]}, {"cls": "1D", "teachers": ["紫", "張"]}, {"cls": "2A", "teachers": ["如"]}, {"cls": "2B", "teachers": ["熊"]}, {"cls": "2C", "teachers": ["暖"]}, {"cls": "2D", "teachers": ["安"]}, {"cls": "3A", "teachers": ["成"]}, {"cls": "3B", "teachers": ["愛"]}, {"cls": "3C", "teachers": ["芊"]}, {"cls": "3D", "teachers": ["S"]}, {"cls": "3E", "teachers": ["雪"]}, {"cls": "4A", "teachers": ["曉"]}, {"cls": "4B", "teachers": ["鄭"]}, {"cls": "4C", "teachers": ["袁"]}, {"cls": "4D", "teachers": ["楹"]}, {"cls": "5A", "teachers": ["珊"]}, {"cls": "5B", "teachers": ["駿"]}, {"cls": "5C", "teachers": ["珏"]}, {"cls": "5D", "teachers": ["開"]}, {"cls": "5E", "teachers": ["梁"]}, {"cls": "6A", "teachers": ["凌"]}, {"cls": "6B", "teachers": ["秀"]}, {"cls": "6C", "teachers": ["蘇"]}, {"cls": "6D", "teachers": ["莊"]}, {"cls": "6E", "teachers": ["李"]}],
+            },
+            "小息三": {
+                "Mon": [{"pos": "2樓A", "teacher": "婷"}, {"pos": "2樓B", "teacher": "紫"}, {"pos": "3樓A", "teacher": "熊"}, {"pos": "4樓全層", "teacher": "安"}, {"pos": "5樓A", "teacher": "成"}, {"pos": "5樓B", "teacher": "芊"}, {"pos": "6 樓A", "teacher": "雪"}, {"pos": "6樓B", "teacher": "凌"}],
+                "Tue": [{"pos": "2樓A", "teacher": "紫"}, {"pos": "2樓B", "teacher": "如"}, {"pos": "3樓A", "teacher": "暖"}, {"pos": "4樓全層", "teacher": "安"}, {"pos": "5樓A", "teacher": "曉"}, {"pos": "5樓B", "teacher": "鄭"}, {"pos": "6 樓A", "teacher": "秀"}, {"pos": "6樓B", "teacher": "莊"}],
+                "Wed": [{"pos": "2樓A", "teacher": "雅"}, {"pos": "2樓B", "teacher": "成"}, {"pos": "3樓A", "teacher": "愛"}, {"pos": "4樓全層", "teacher": "芊"}, {"pos": "5樓A", "teacher": "鄭"}, {"pos": "5樓B", "teacher": "駿"}, {"pos": "6 樓A", "teacher": "開"}, {"pos": "6樓B", "teacher": "李"}],
+                "Thu": [{"pos": "2樓A", "teacher": "婷"}, {"pos": "2樓B", "teacher": "如"}, {"pos": "3樓A", "teacher": "暖"}, {"pos": "4樓全層", "teacher": "愛"}, {"pos": "5樓A", "teacher": "曉"}, {"pos": "5樓B", "teacher": "楹"}, {"pos": "6 樓A", "teacher": "蘇"}, {"pos": "6樓B", "teacher": "雪"}],
+                "Fri": [{"pos": "2樓A", "teacher": "芊"}, {"pos": "2樓B", "teacher": "嘉"}, {"pos": "3樓A", "teacher": "袁"}, {"pos": "4樓全層", "teacher": "珊"}, {"pos": "5樓A", "teacher": "駿"}, {"pos": "5樓B", "teacher": "珏"}, {"pos": "6 樓A", "teacher": "開"}, {"pos": "6樓B", "teacher": "梁"}],
+            },
+        };
+
         const TAB_CONFIG = [
             { id: 'section-overview',  label: '學校概覽',        icon: 'fa-school' },
             { id: 'section-timetable', label: '教師課表',        icon: 'fa-clock-rotate-left' },
             { id: 'section-free',      label: '查詢空堂老師',    icon: 'fa-user-check' },
             { id: 'section-duties',    label: '查詢教師職務',    icon: 'fa-building-shield' },
             { id: 'section-common',    label: '共同空堂分析',    icon: 'fa-users-viewfinder' },
-            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' }
+            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' },
+            { id: 'section-duty',      label: '當值安排',        icon: 'fa-shield-halved' }
         ];
 
         const teachersRaw = [
@@ -642,7 +736,116 @@
             }
         }
 
+
+        // ── Duty schedule state
+        App.prototype.dutyState = { period: '小息一', day: 'Mon', variant: '晴天' };
+
+        App.prototype.setDutyPeriod = function(period) {
+            this.dutyState.period = period;
+            this.renderDuty();
+        };
+        App.prototype.setDutyDay = function(day) {
+            this.dutyState.day = day;
+            this.renderDuty();
+        };
+        App.prototype.setDutyVariant = function(variant) {
+            this.dutyState.variant = variant;
+            this.renderDuty();
+        };
+
+        App.prototype.renderDuty = function() {
+            const { period, day, variant } = this.dutyState;
+
+            // Update period buttons
+            document.querySelectorAll('.duty-period-btn').forEach(b => {
+                b.className = 'duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-slate-200 text-slate-600 hover:bg-purple-50';
+            });
+            const activeP = document.getElementById('duty-btn-' + period);
+            if (activeP) activeP.className = 'duty-period-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-purple-600 bg-purple-600 text-white';
+
+            // Update day buttons
+            document.querySelectorAll('.duty-day-btn').forEach(b => {
+                b.className = 'duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-slate-200 text-slate-600 hover:bg-purple-50';
+            });
+            const activeD = document.getElementById('duty-btn-' + day);
+            if (activeD) activeD.className = 'duty-day-btn px-4 py-2 rounded-xl border-2 font-bold text-sm transition border-purple-600 bg-purple-600 text-white';
+
+            // Show/hide rainy toggle
+            const rainyDiv = document.getElementById('duty-rainy-toggle');
+            rainyDiv.classList.toggle('hidden', period !== '小息一');
+
+            // Update variant buttons
+            if (period === '小息一') {
+                document.querySelectorAll('.duty-variant-btn').forEach(b => {
+                    b.className = 'duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition border-blue-200 text-blue-700 hover:bg-blue-100';
+                });
+                const activeV = document.getElementById('duty-btn-' + variant);
+                if (activeV) activeV.className = 'duty-variant-btn px-3 py-1.5 rounded-lg border-2 font-bold text-xs transition border-blue-600 bg-blue-600 text-white';
+            }
+
+            // Get data
+            let entries;
+            if (period === '小息一') {
+                entries = DUTY_DATA['小息一'][variant][day] || [];
+            } else {
+                entries = DUTY_DATA[period][day] || [];
+            }
+
+            const container = document.getElementById('duty-result');
+            if (!entries.length) {
+                container.innerHTML = '<div class="p-8 text-center text-slate-400">此時段無當值資料</div>';
+                return;
+            }
+
+            if (period === '午膳') {
+                // Group by grade
+                const grades = ['1','2','3','4','5','6'];
+                let html = '<div class="space-y-4">';
+                grades.forEach(g => {
+                    const cls = entries.filter(e => e.cls && e.cls[0] === g);
+                    if (!cls.length) return;
+                    html += '<div>';
+                    html += '<h3 class="font-bold text-slate-700 mb-2 text-sm">小' + (['一','二','三','四','五','六'][parseInt(g)-1]) + '</h3>';
+                    html += '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">';
+                    cls.forEach(e => {
+                        const t = e.teachers.join(' / ') || '—';
+                        html += '<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex flex-col items-center text-center">';
+                        html += '<div class="font-bold text-amber-900 text-sm">' + e.cls + '</div>';
+                        html += '<div class="text-amber-700 font-bold mt-1">' + t + '</div>';
+                        html += '</div>';
+                    });
+                    html += '</div></div>';
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            } else {
+                // Position cards
+                const colors = {
+                    '早會': 'bg-indigo-50 border-indigo-200 text-indigo-800',
+                    '小息一': 'bg-green-50 border-green-200 text-green-800',
+                    '小息二': 'bg-sky-50 border-sky-200 text-sky-800',
+                    '小息三': 'bg-rose-50 border-rose-200 text-rose-800',
+                };
+                const col = colors[period] || 'bg-slate-50 border-slate-200 text-slate-800';
+                let html = '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">';
+                entries.forEach(e => {
+                    html += '<div class="' + col + ' border rounded-2xl p-3 flex flex-col">';
+                    html += '<div class="text-xs font-medium opacity-70 mb-1">' + (e.pos || '') + '</div>';
+                    html += '<div class="text-lg font-bold">' + (e.teacher || '—') + '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            }
+        };
+
+        App.prototype._initDuty = function() {
+            // Set initial active states
+            this.setDutyPeriod('小息一');
+        };
+
         const app = new App();
+        app._initDuty();
         document.getElementById('f2-teacher').onchange = () => app.showTeacherTimetable();
         app.showTeacherTimetable();
     </script>
