@@ -434,8 +434,42 @@
 
         class DataManager {
             constructor() {
-                // Keep A-school display names (no anonymized teacher codes)
-                this.teachers = teachersRaw.map(t => ({ ...t, displayName: t.name }));
+                this.teachers = teachersRaw.map((t, idx) => ({
+                    ...t,
+                    id: idx + 1,
+                    code: `T${String(idx + 1).padStart(2, '0')}`,
+                }));
+                this.codeToName = {};
+                this.nameToCode = {};
+                this.teachers.forEach(t => {
+                    this.codeToName[t.code] = t.name;
+                    this.nameToCode[t.name] = t.code;
+                });
+                this.teachers = this.teachers.map(t => ({ ...t, displayName: t.code }));
+            }
+            normalizeTeacherRefs(ref) {
+                if (Array.isArray(ref)) {
+                    return ref.flatMap(v => this.normalizeTeacherRefs(v));
+                }
+                if (typeof ref !== 'string') return [];
+                return ref
+                    .split(/[\/／]/)
+                    .map(s => s.trim())
+                    .filter(Boolean)
+                    .map(id => this.codeToName[id] || id);
+            }
+            hasTeacherRef(ref, teacherName) {
+                return this.normalizeTeacherRefs(ref).includes(teacherName);
+            }
+            toDisplayTeacher(ref) {
+                const names = this.normalizeTeacherRefs(ref);
+                if (!names.length) return typeof ref === 'string' ? ref : '';
+                return names.map(n => this.nameToCode[n] || n).join(' / ');
+            }
+            toDisplayTeachers(refs) {
+                const names = this.normalizeTeacherRefs(refs);
+                if (!names.length) return '—';
+                return names.map(n => this.nameToCode[n] || n).join(' / ');
             }
             getSchedule(name, day) {
                 const dayKey = { "星期一": "Mon", "星期二": "Tue", "星期三": "Wed", "星期四": "Thu", "星期五": "Fri" }[day];
@@ -461,11 +495,11 @@
                 // Duties = 1 pt each
                 const d = DAY_KEY[day];
                 if (d) {
-                    if ((DUTY_DATA['早會'][d]||[]).some(e=>e.teacher===name)) score++;
-                    if (Object.values(DUTY_DATA['小息一']).some(v=>(v[d]||[]).some(e=>e.teacher===name))) score++;
-                    if ((DUTY_DATA['小息二'][d]||[]).some(e=>e.teacher===name)) score++;
-                    if ((DUTY_DATA['午膳'][d]||[]).some(e=>e.teachers.includes(name))) score++;
-                    if ((DUTY_DATA['小息三'][d]||[]).some(e=>e.teacher===name)) score++;
+                    if ((DUTY_DATA['早會'][d]||[]).some(e => this.hasTeacherRef(e.teacher, name))) score++;
+                    if (Object.values(DUTY_DATA['小息一']).some(v => (v[d]||[]).some(e => this.hasTeacherRef(e.teacher, name)))) score++;
+                    if ((DUTY_DATA['小息二'][d]||[]).some(e => this.hasTeacherRef(e.teacher, name))) score++;
+                    if ((DUTY_DATA['午膳'][d]||[]).some(e => this.hasTeacherRef(e.teachers || [], name))) score++;
+                    if ((DUTY_DATA['小息三'][d]||[]).some(e => this.hasTeacherRef(e.teacher, name))) score++;
                 }
                 return score;
             }
@@ -547,13 +581,13 @@
                 };
                 const getDCell = (pkey, cnDay) => {
                     const d = DAY_KEY[cnDay]; if (!d) return null;
-                    if (pkey === 'br1') { const e = (DUTY_DATA['小息一']['晴天'][d]||[]).find(e=>e.teacher===name); return e ? e.pos.replace(/^崗位\d+\s*/,'') : null; }
-                    if (pkey === 'lun') { const e = (DUTY_DATA['午膳'][d]||[]).find(e=>e.teachers.includes(name)); return e ? e.cls : null; }
+                    if (pkey === 'br1') { const e = (DUTY_DATA['小息一']['晴天'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, name)); return e ? e.pos.replace(/^崗位\d+\s*/,'') : null; }
+                    if (pkey === 'lun') { const e = (DUTY_DATA['午膳'][d]||[]).find(e => this.db.hasTeacherRef(e.teachers || [], name)); return e ? e.cls : null; }
                     const m = dutyMap[pkey]; if (!m) return null;
-                    const e = (DUTY_DATA[m[0]][d]||[]).find(e=>e.teacher===name); return e ? e.pos : null;
+                    const e = (DUTY_DATA[m[0]][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, name)); return e ? e.pos : null;
                 };
                 // Early assembly duty (07:30–07:55, before timetable slot 0)
-                const earlyDuty = dayKeys.map(cn => { const d = DAY_KEY[cn]; return d ? ((DUTY_DATA['早會'][d]||[]).find(e=>e.teacher===name)||null) : null; });
+                const earlyDuty = dayKeys.map(cn => { const d = DAY_KEY[cn]; return d ? ((DUTY_DATA['早會'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, name))||null) : null; });
                 const hasEarly = earlyDuty.some(Boolean);
                 let h = `<div class="overflow-x-auto"><table class="w-full border shadow-sm rounded-xl overflow-hidden text-sm"><thead class="bg-slate-100 text-slate-600"><tr>
                     <th class="p-3 text-left whitespace-nowrap">時段</th>
@@ -937,10 +971,7 @@
             const { mode, day, variant } = this.dutiesState;
             const DUTY_MODES = ['早會','小息一','小息二','午膳','小息三'];
             const isDuty = DUTY_MODES.includes(mode);
-            const getDisplayName = (id) => {
-                const t = this.db.teachers.find(x => x.name === id);
-                return t ? t.displayName : id;
-            };
+            const getDisplayName = (id) => this.db.toDisplayTeacher(id);
 
             // Day buttons
             ['Mon','Tue','Wed','Thu','Fri'].forEach(d => {
@@ -997,7 +1028,7 @@
                         if (!cls.length) return;
                         html += `<div><h3 class="font-bold text-slate-700 mb-2 text-sm">小${gradeNames[gi]}</h3><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">`;
                         cls.forEach(e => {
-                            const tnames = (e.teachers || []).map(getDisplayName).join(' / ');
+                            const tnames = this.db.toDisplayTeachers(e.teachers || []);
                             html += `<div class="${col} border rounded-xl p-3 flex flex-col items-center text-center"><div class="font-bold text-sm">${e.cls}</div><div class="font-bold mt-1">${tnames || '—'}</div></div>`;
                         });
                         html += '</div></div>';
@@ -1054,18 +1085,18 @@
             const d = DAY_KEY[cnDay]; if (!d) return [];
             variant = variant || '晴天';
             const out = [];
-            const hr = (DUTY_DATA['早會'][d]||[]).find(e=>e.teacher===teacherId);
+            const hr = (DUTY_DATA['早會'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, teacherId));
             if (hr) out.push({period:'早會', time:'07:30–07:55', label:hr.pos});
             const b1variants = ['晴天','雨天上學期','雨天下學期'].map(v=>{
-                const e=((DUTY_DATA['小息一'][v]||{})[d]||[]).find(e=>e.teacher===teacherId);
+                const e=((DUTY_DATA['小息一'][v]||{})[d]||[]).find(e => this.db.hasTeacherRef(e.teacher, teacherId));
                 return e ? {v, pos:e.pos} : null;
             }).filter(Boolean);
             if (b1variants.length) out.push({period:'小息一', time:'10:00–10:30', label:b1variants[0].pos, allVariants:b1variants});
-            const b2 = (DUTY_DATA['小息二'][d]||[]).find(e=>e.teacher===teacherId);
+            const b2 = (DUTY_DATA['小息二'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, teacherId));
             if (b2) out.push({period:'小息二', time:'12:00–12:10', label:b2.pos});
-            const ln = (DUTY_DATA['午膳'][d]||[]).find(e=>e.teachers.includes(teacherId));
+            const ln = (DUTY_DATA['午膳'][d]||[]).find(e => this.db.hasTeacherRef(e.teachers || [], teacherId));
             if (ln) out.push({period:'午膳', time:'13:10–13:55', label:ln.cls+'課室'});
-            const b3 = (DUTY_DATA['小息三'][d]||[]).find(e=>e.teacher===teacherId);
+            const b3 = (DUTY_DATA['小息三'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, teacherId));
             if (b3) out.push({period:'小息三', time:'13:55–14:05', label:b3.pos});
             return out;
         };
@@ -1073,14 +1104,15 @@
         App.prototype.getDutyFreeTeachers = function(period, cnDay, absentId, variant) {
             const d = DAY_KEY[cnDay]; if (!d) return [];
             const busy = new Set();
+            const addBusy = (ref) => this.db.normalizeTeacherRefs(ref).forEach(n => busy.add(n));
             if (period === '小息一') {
-                ['晴天','雨天上學期','雨天下學期'].forEach(v=>((DUTY_DATA['小息一'][v]||{})[d]||[]).forEach(e=>busy.add(e.teacher)));
+                ['晴天','雨天上學期','雨天下學期'].forEach(v => ((DUTY_DATA['小息一'][v]||{})[d]||[]).forEach(e => addBusy(e.teacher)));
             } else if (period === '午膳') {
-                (DUTY_DATA['午膳'][d]||[]).forEach(e=>e.teachers.forEach(t=>busy.add(t)));
+                (DUTY_DATA['午膳'][d]||[]).forEach(e => addBusy(e.teachers || []));
             } else {
-                (DUTY_DATA[period][d]||[]).forEach(e=>busy.add(e.teacher));
+                (DUTY_DATA[period][d]||[]).forEach(e => addBusy(e.teacher));
             }
-            return this.db.teachers.filter(t=>t.name!==absentId && !busy.has(t.name));
+            return this.db.teachers.filter(t => t.name !== absentId && !busy.has(t.name));
         };
 
         App.prototype.toggleDutyAssign = function(period, name) {
@@ -1105,9 +1137,9 @@
             ];
             const getEntry = (key, cnDay) => {
                 const d = DK[cnDay]; if (!d) return null;
-                if (key === '小息一') return (DUTY_DATA['小息一']['晴天'][d]||[]).find(e=>e.teacher===name)||null;
-                if (key === '午膳')   return (DUTY_DATA['午膳'][d]||[]).find(e=>e.teachers.includes(name))||null;
-                return (DUTY_DATA[key][d]||[]).find(e=>e.teacher===name)||null;
+                if (key === '小息一') return (DUTY_DATA['小息一']['晴天'][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, name))||null;
+                if (key === '午膳')   return (DUTY_DATA['午膳'][d]||[]).find(e => this.db.hasTeacherRef(e.teachers || [], name))||null;
+                return (DUTY_DATA[key][d]||[]).find(e => this.db.hasTeacherRef(e.teacher, name))||null;
             };
             const hasAny = dutyPeriods.some(dp => dayKeys.some(cn => getEntry(dp.key, cn)));
             if (!hasAny) return '';
