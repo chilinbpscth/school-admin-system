@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DemoV2（匿名代號）｜A學校 教師行政管理系統 2025-2026</title>
+    <title>DemoV3（匿名代號）｜A學校 教師行政管理系統 2025-2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,16 +21,25 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
+    <!-- Demo Developer Banner -->
+    <div class="bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md">
+        <span>🔶 示範版本 DEMO V3 · 資料僅供展示</span>
+        <span class="text-amber-200 hidden sm:inline">·</span>
+        <span class="hidden sm:inline">開發者：佛教志蓮小學 張定恒主任</span>
+        <a href="mailto:thcheung@chilinbps.edu.hk" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full hover:bg-amber-50 transition whitespace-nowrap">聯絡開發者</a>
+    </div>
+
     <!-- Header -->
     <header class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg sticky top-0 z-50 no-print">
         <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex flex-col items-center md:items-start text-center md:text-left">
                 <h1 class="text-xl md:text-2xl font-bold flex items-center gap-3">
                     <i class="fa-solid fa-user-tie text-yellow-400"></i> 2025 – 2026年度 教師行政管理系統
+                    <span class="bg-amber-400/40 text-amber-200 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-400/30">示範版 DEMO V3</span>
                 </h1>
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 mt-2">
                     <p class="text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">
-                        A學校
+                        開發者：佛教志蓮小學 張定恒主任
                     </p>
                 </div>
             </div>
@@ -267,8 +276,9 @@
     </main>
 
     <footer class="bg-slate-900 text-slate-500 text-center py-6 text-sm mt-auto no-print">
-        <p>&copy; 2026 A學校 教師行政管理系統 | 內部行政用途</p>
-        <p class="mt-1 text-slate-600 text-xs">系統開發：張定恒主任（佛教志蓮小學）</p>
+        <p>&copy; 2026 A學校 教師行政管理系統 | 示範版本 DEMO V3 | 內部行政用途</p>
+        <p class="mt-1 text-slate-600 text-xs">開發者：佛教志蓮小學 張定恒主任</p>
+        <p class="mt-1 text-slate-600 text-xs">客製化查詢：<a href="mailto:thcheung@chilinbps.edu.hk" class="text-slate-400 hover:text-slate-300 underline">thcheung@chilinbps.edu.hk</a></p>
     </footer>
 
     <div id="toast-container" class="fixed top-6 right-6 z-[60] flex flex-col gap-3 no-print"></div>
@@ -424,6 +434,7 @@
 
         class DataManager {
             constructor() {
+                // Keep A-school display names (no anonymized teacher codes)
                 this.teachers = teachersRaw.map(t => ({ ...t, displayName: t.name }));
             }
             getSchedule(name, day) {
@@ -926,6 +937,10 @@
             const { mode, day, variant } = this.dutiesState;
             const DUTY_MODES = ['早會','小息一','小息二','午膳','小息三'];
             const isDuty = DUTY_MODES.includes(mode);
+            const getDisplayName = (id) => {
+                const t = this.db.teachers.find(x => x.name === id);
+                return t ? t.displayName : id;
+            };
 
             // Day buttons
             ['Mon','Tue','Wed','Thu','Fri'].forEach(d => {
@@ -982,7 +997,8 @@
                         if (!cls.length) return;
                         html += `<div><h3 class="font-bold text-slate-700 mb-2 text-sm">小${gradeNames[gi]}</h3><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">`;
                         cls.forEach(e => {
-                            html += `<div class="${col} border rounded-xl p-3 flex flex-col items-center text-center"><div class="font-bold text-sm">${e.cls}</div><div class="font-bold mt-1">${e.teachers.join(' / ') || '—'}</div></div>`;
+                            const tnames = (e.teachers || []).map(getDisplayName).join(' / ');
+                            html += `<div class="${col} border rounded-xl p-3 flex flex-col items-center text-center"><div class="font-bold text-sm">${e.cls}</div><div class="font-bold mt-1">${tnames || '—'}</div></div>`;
                         });
                         html += '</div></div>';
                     });
@@ -991,7 +1007,7 @@
                 } else {
                     let html = '<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">';
                     entries.forEach(e => {
-                        html += `<div class="${col} border rounded-2xl p-3 flex flex-col"><div class="text-xs font-medium opacity-70 mb-1">${e.pos||''}</div><div class="text-lg font-bold">${e.teacher||'—'}</div></div>`;
+                        html += `<div class="${col} border rounded-2xl p-3 flex flex-col"><div class="text-xs font-medium opacity-70 mb-1">${e.pos||''}</div><div class="text-lg font-bold">${e.teacher ? getDisplayName(e.teacher) : '—'}</div></div>`;
                     });
                     html += '</div>';
                     container.innerHTML = html;
@@ -1070,7 +1086,7 @@
         App.prototype.toggleDutyAssign = function(period, name) {
             this.dutyAssignments[period] = (this.dutyAssignments[period] === name) ? null : name;
             this.generateSubRecommendations();
-            this.showMessage(this.dutyAssignments[period] ? '當值已指派: ' + this.dutyAssignments[period] : '已取消當值指派', 'success');
+            this.showMessage(this.dutyAssignments[period] ? '當值已指派: ' + (this.db.teachers.find(t=>t.name===this.dutyAssignments[period])?.displayName || this.dutyAssignments[period]) : '已取消當值指派', 'success');
         };
 
         App.prototype.setDutySubVariant = function(variant) {
