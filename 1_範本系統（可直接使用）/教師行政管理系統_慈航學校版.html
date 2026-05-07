@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教師行政管理系統 - 慈航學校</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        
+        /* Toast Animation */
+        .toast-enter { transform: translateX(100%); opacity: 0; }
+        .toast-enter-active { transform: translateX(0); opacity: 1; transition: all 300ms ease-out; }
+        .toast-exit { transform: translateX(0); opacity: 1; }
+        .toast-exit-active { transform: translateX(100%); opacity: 0; transition: all 300ms ease-in; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        
+        .tab-active { background-color: #eff6ff; color: #1e40af; border-bottom: 3px solid #2563eb; }
+        
+        @media print { .no-print { display: none !important; } .print-only { display: block !important; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex flex-col items-center md:items-start text-center md:text-left">
+                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-3">
+                    <i class="fa-solid fa-user-tie text-yellow-400"></i> 2025 – 2026年度 慈航學校 教師行政管理系統
+                </h1>
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 mt-2">
+                    <p class="text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">
+                        系統開發：張定恒主任 (佛教志蓮小學)
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-col items-center md:items-end gap-2 text-right">
+                <span class="text-[10px] md:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">數據版本：2026-05-06 版 (慈航學校)</span>
+                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100">全日 16 時段架構 (55位代號教師)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation (Auto-wrapping Tabs) -->
+    <nav class="bg-white shadow-sm border-b sticky top-[120px] md:top-[88px] z-40 no-print">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap gap-x-2 gap-y-0" id="navTabs">
+                <!-- Tabs injected by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto px-4 py-6 no-print">
+        
+        <!-- Tab: School Overview (from PDF data) -->
+        <section id="section-overview" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-school text-blue-600"></i> 2025-2026 年度慈航學校資料概覽
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
+                        <div class="text-blue-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-users-class"></i> <span>班級數目</span></div>
+                        <div class="text-5xl font-bold text-blue-900 mt-3">27 班</div>
+                        <div class="text-xs text-blue-500 mt-2">小一至小六 (P1:4班, P2:4班, P3:5班, P4:4班, P5:5班, P6:5班)</div>
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                        <div class="text-emerald-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-chalkboard-teacher"></i> <span>教師人數</span></div>
+                        <div class="text-5xl font-bold text-emerald-900 mt-3">55 位</div>
+                        <div class="text-xs text-emerald-500 mt-2">代號模式 (T01-T55) · 隱私保護</div>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                        <div class="text-amber-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-clock"></i> <span>時段架構</span></div>
+                        <div class="text-5xl font-bold text-amber-900 mt-3">16 時段</div>
+                        <div class="text-xs text-amber-500 mt-2">全日 · 含課前、職務、小息、課後</div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-coffee text-orange-500"></i> 每日小息安排 (來自時間總表)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
+                            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-walking text-2xl"></i></div>
+                            <div>
+                                <div class="font-bold text-orange-800">小息(一)</div>
+                                <div class="text-sm text-orange-500">10:00 – 10:30</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">上午小息</div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
+                            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-walking text-2xl"></i></div>
+                            <div>
+                                <div class="font-bold text-orange-800">小息(二)</div>
+                                <div class="text-sm text-orange-500">12:00 – 12:10</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">課間小息</div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
+                            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-utensils text-2xl"></i></div>
+                            <div>
+                                <div class="font-bold text-orange-800">午膳</div>
+                                <div class="text-sm text-orange-500">13:10 – 13:55</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">午膳時段</div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
+                            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-walking text-2xl"></i></div>
+                            <div>
+                                <div class="font-bold text-orange-800">小息(三)</div>
+                                <div class="text-sm text-orange-500">13:55 – 14:05</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">午膳後小息</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-slate-700 mb-3">主要科目 / 學習領域 (來自全校授課時間總表)</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">中文 / 國文</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">英文</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">數學</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">常識</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">普通話</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">音樂</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">體育</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">視藝</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">電腦</span>
+                        <span class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 transition text-slate-700 text-sm rounded-2xl font-medium">圖書</span>
+                        <span class="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-sm rounded-2xl font-medium">人文</span>
+                        <span class="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-sm rounded-2xl font-medium">科學 STEAM</span>
+                        <span class="px-4 py-1.5 bg-violet-100 text-violet-700 text-sm rounded-2xl font-medium">佛學</span>
+                        <span class="px-4 py-1.5 bg-violet-100 text-violet-700 text-sm rounded-2xl font-medium">閱讀 / 導修 / 班主任課</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t text-xs text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
+                    <span>數據來源：2025-2026 年度全校授課時間總表 (PDF)</span>
+                    <span>更新日期：2026-05-06</span>
+                    <span>內部行政用途 · 代號隱私模式 · 慈航學校</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab: Teacher Timetable (FULL DAY) -->
+        <section id="section-timetable" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-blue-600"></i> 全日時間表查詢 (代號模式)
+                </h2>
+                <div class="mb-8 bg-slate-50 p-6 rounded-xl border border-slate-100 max-w-xs">
+                    <label class="block text-sm font-bold text-slate-600 mb-2">選擇教師代號</label>
+                    <select id="f2-teacher" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"></select>
+                </div>
+                <div id="f2-result" class="overflow-x-auto"></div>
+            </div>
+        </section>
+
+        <!-- Tab: Query Free Teachers -->
+        <section id="section-free" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-green-100">
+                <h2 class="text-xl font-bold mb-6 text-green-800 flex items-center gap-2">
+                    <i class="fa-solid fa-user-check"></i> 查詢空堂教師
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-green-50/50 p-6 rounded-xl border border-green-100">
+                    <div>
+                        <label class="block text-sm font-bold text-green-900 mb-2">選擇星期</label>
+                        <select id="f1-day" class="w-full border-green-200 border rounded-lg p-3"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-green-900 mb-2">選擇時段</label>
+                        <select id="f1-period" class="w-full border-green-200 border rounded-lg p-3"></select>
+                    </div>
+                </div>
+                <button onclick="app.findFreeTeachers()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mb-8 shadow-md hover:bg-green-700 transition">查詢代號名單</button>
+                <div id="f1-result" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- Tab: Duties -->
+        <section id="section-duties" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-teal-100">
+                <h2 class="text-xl font-bold mb-6 text-teal-800 flex items-center gap-2">
+                    <i class="fa-solid fa-building-shield"></i> 查詢該時段教師職務
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-sm font-bold text-teal-900 mb-2">選擇星期</label>
+                        <select id="f4-day" class="w-full border-teal-200 border rounded-lg p-3"></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-teal-900 mb-2">選擇時段</label>
+                        <select id="f4-period" class="w-full border-teal-200 border rounded-lg p-3"></select>
+                    </div>
+                </div>
+                <button onclick="app.findDuties()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl mb-8 shadow-md hover:bg-teal-700 transition">分析職務分佈</button>
+                <div id="f4-result" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- Tab: Common Free -->
+        <section id="section-common" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-indigo-100">
+                <h2 class="text-xl font-bold mb-6 text-indigo-800 flex items-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder"></i> 共同空堂分析
+                </h2>
+                <div id="f3-teacher-list" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6 p-4 bg-slate-50 rounded-xl border overflow-y-auto max-h-64"></div>
+                <button onclick="app.findCommonFree()" class="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-md transition hover:bg-indigo-700">分析共同時段（全週）</button>
+                <div id="f3-result" class="mt-8"></div>
+            </div>
+        </section>
+
+        <!-- Tab: Substitution -->
+        <section id="section-sub" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100">
+                <h2 class="text-xl font-bold mb-6 text-red-800 flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen"></i> 代課推薦系統 (代號模式)
+                </h2>
+                <div class="bg-red-50/50 p-6 rounded-2xl border border-red-100 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-bold text-red-900 mb-2">請假教師代號</label>
+                            <select id="f5-teacher" class="w-full border-red-200 border rounded-lg p-3 bg-white shadow-sm"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-red-900 mb-2">請假日期</label>
+                            <input type="date" id="f5-date" class="w-full border-red-200 border rounded-lg p-3 bg-white shadow-sm">
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-red-900 mb-3 flex justify-between items-center">
+                            <span>代課節次範圍</span>
+                            <div class="flex gap-2">
+                                <button onclick="app.toggleAllSubPeriods(true)" class="text-xs text-blue-600 hover:underline">全選</button>
+                                <span class="text-slate-300">|</span>
+                                <button onclick="app.toggleAllSubPeriods(false)" class="text-xs text-red-600 hover:underline">全清</button>
+                            </div>
+                        </label>
+                        <div id="f5-periods-select" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3"></div>
+                    </div>
+                    <button onclick="app.generateSubRecommendations()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> 生成代課方案
+                    </button>
+                </div>
+                <div id="f5-workspace" class="hidden space-y-6 pb-20"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-500 text-center py-6 text-sm mt-auto no-print">
+        <p>&copy; 2026 慈航學校 教師行政管理系統 | 內部行政用途 | 系統開發：張定恒主任（佛教志蓮小學）</p>
+    </footer>
+
+    <div id="toast-container" class="fixed top-6 right-6 z-[60] flex flex-col gap-3 no-print"></div>
+
+    <script>
+        const CONFIG = {
+            PERIODS: [
+                { key: 'pre', label: '課前', time: '07:40–07:55', type: 'duty' },
+                { key: 'ass', label: '早會/班主任課', time: '07:55–08:30', type: 'ass' },
+                { key: 'p1', label: '第一節', time: '08:30–09:00', type: 'lesson' },
+                { key: 'p2', label: '第二節', time: '09:00–09:30', type: 'lesson' },
+                { key: 'p3', label: '第三節', time: '09:30–10:00', type: 'lesson' },
+                { key: 'fr', label: '小息(一)', time: '10:00–10:30', type: 'duty' },
+                { key: 'p4', label: '第四節', time: '10:30–11:00', type: 'lesson' },
+                { key: 'p5', label: '第五節', time: '11:00–11:30', type: 'lesson' },
+                { key: 'p6', label: '第六節', time: '11:30–12:00', type: 'lesson' },
+                { key: 'pr', label: '小息(二)', time: '12:00–12:10', type: 'duty' },
+                { key: 'p7', label: '第七節', time: '12:10–12:40', type: 'lesson' },
+                { key: 'p8', label: '第八節', time: '12:40–13:10', type: 'lesson' },
+                { key: 'lun', label: '午膳', time: '13:10–13:55', type: 'lunch' },
+                { key: 'lr', label: '小息(三)', time: '13:55–14:05', type: 'duty' },
+                { key: 'read', label: '閱讀', time: '14:05–14:20', type: 'extra' },
+                { key: 'enr', label: '增潤課/班主任課', time: '14:20–15:15', type: 'extra' }
+            ],
+            DAYS: ["星期一", "星期二", "星期三", "星期四", "星期五"],
+            busyKeys: ["中", "英", "數", "常", "人", "科", "普", "音", "體", "視", "電", "圖", "佛", "國", "閱", "導", "1A", "1B", "1C", "1D", "2A", "2B", "2C", "2D", "3A", "3B", "3C", "3D", "3E", "4A", "4B", "4C", "4D", "5A", "5B", "5C", "5D", "5E", "6A", "6B", "6C", "6D", "6E"]
+        };
+
+        const TAB_CONFIG = [
+            { id: 'section-overview', label: '學校概覽', icon: 'fa-school' },
+            { id: 'section-timetable', label: '教師課表', icon: 'fa-clock-rotate-left' },
+            { id: 'section-free', label: '查詢空堂老師', icon: 'fa-user-check' },
+            { id: 'section-duties', label: '查詢該時段教師職務', icon: 'fa-building-shield' },
+            { id: 'section-common', label: '共同空堂分析', icon: 'fa-users-viewfinder' },
+            { id: 'section-sub', label: '代課推薦系統', icon: 'fa-user-pen' }
+        ];
+
+        const teachersRaw = [
+	{ name: "T01",
+	                        Mon: ["", "", "", "", "3E英", "", "5A英", "5A英", "3D英", "", "", "", "", "", "3E閱", "3E英"],
+	                        Tue: ["", "", "5A英", "", "", "", "", "", "", "", "", "", "", "", "5A閱", "5A英"],
+	                        Wed: ["", "", "", "3D英", "3D英", "", "5A英", "5A英", "", "", "3E英", "3E英", "", "", "", ""],
+	                        Thu: ["", "", "5A英", "5A英", "3D英", "", "", "", "", "", "3E英", "3E英", "", "", "3D閱", "3D英"],
+	                        Fri: ["", "", "5A英", "3E英", "", "", "3D英", "3D英", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T02",
+	                        Mon: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "3E英", "3E英", "", "", "", "", "", "3D英", "3D英", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T03",
+	                        Mon: ["", "", "", "", "5C普", "", "5C英", "", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "", "", "", "5C英", "5C英", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "5C英", "5C英", "", "", "", "2D視", "2D視", "", "", "", "", "", "3D循", ""],
+	                        Thu: ["", "", "", "5C英", "5C英", "", "5D普", "", "", "", "", "", "", "", "5C閱", "5C英"],
+	                        Fri: ["", "", "", "", "", "", "5C英", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T04",
+	                        Mon: ["", "", "", "", "", "", "1C體", "1C體", "", "", "2D體", "2D體", "", "", "", ""],
+	                        Tue: ["", "", "", "3B體", "3B體", "", "4D電", "4D電", "", "", "", "6A佛", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "2C體", "2C體", "", "1B佛", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "5E佛", "", "3A佛", "", "", "", "3D佛", "1A佛", "", "", "1D閱", "1D導"],
+	                        Fri: ["", "", "5D佛", "2B體", "2B體", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T05",
+	                        Mon: ["", "", "", "1D普", "1D普", "", "", "5B數", "5B數", "", "", "", "", "", "5B閱", "5B數"],
+	                        Tue: ["", "", "", "4C科", "4C科", "", "5B數", "", "1C科", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "5B數", "", "3E電/5E電", "3E電/5E電", "4C科", "", "2A電", "2A電", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "5B數", "1C科", "1C科", "", "5B電/5C電", "5B電/5C電", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "", "5B數", "5B數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T06",
+	                        Mon: ["", "", "", "5B體", "5B體", "", "", "", "", "", "6C體", "6C體", "", "", "", ""],
+	                        Tue: ["", "", "", "5D體", "5D體", "", "5E體", "5E體", "", "", "4B體", "4B體", "", "", "", ""],
+	                        Wed: ["", "", "", "3A體", "3A體", "", "6D體", "6D體", "", "", "3D體", "3D體", "", "", "", ""],
+	                        Thu: ["", "", "6E體", "6E體", "", "", "2A體", "2A體", "", "", "4A體/4C體", "4A體/4C體", "", "", "", ""],
+	                        Fri: ["", "", "5C體", "5C體", "", "", "5A體", "5A體", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T07",
+	                        Mon: ["", "", "", "", "6A數", "", "", "2B數", "2B數", "", "2A數", "", "", "", "6A閱", "6A數"],
+	                        Tue: ["", "", "6A數", "6A數", "2A數", "", "", "", "2B數", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "6A數", "6A數", "2B數", "", "", "2A數", "2A數", "", "", "", "", "", "1D循", ""],
+	                        Thu: ["", "", "", "2B數", "2B數", "", "6A數", "", "", "", "2A數", "2A數", "", "", "", ""],
+	                        Fri: ["", "", "6A數", "", "", "", "2A數", "2B數", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T08",
+	                        Mon: ["", "", "1B科", "3D中", "3D國", "", "4B科", "4B科", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "", "", "", "4B科", "3D中", "3D中", "", "6B常", "6B常", "", "", "3D閱", "3D中"],
+	                        Wed: ["", "", "5A電", "5A電", "6B常", "", "3D中", "3D中", "", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "6B電", "6B電", "", "3D中", "3C電/3D電", "3C電/3D電", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "6B常", "6B常", "3D中", "", "", "1B科", "1B科", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T09",
+	                        Mon: ["", "", "", "3A常", "3A常", "", "5B常", "", "", "", "3B常", "3B常", "", "", "2B閱", "2B導"],
+	                        Tue: ["", "", "", "", "3A常", "", "3B常", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "3A常", "", "3B常", "", "5B常", "", "", "", "", "", "", "", "6C循", ""],
+	                        Thu: ["", "", "5B常", "", "3B常", "", "", "", "", "", "", "3A常", "", "", "", ""],
+	                        Fri: ["", "", "5B常", "5B常", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T10",
+	                        Mon: ["", "", "3D常", "4D中", "4D國", "", "2D電", "2D電", "", "", "", "2A中", "", "", "", ""],
+	                        Tue: ["", "", "1A普", "1A普", "", "", "3D常", "", "4D中", "", "2A中", "2A中", "", "", "4D閱", "4D中"],
+	                        Wed: ["", "", "2A中", "2A中", "", "", "4D中", "4D中", "", "", "", "", "", "", "2A循", ""],
+	                        Thu: ["", "", "3D常", "4D中", "4D中", "", "", "", "2A中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "3D常", "3D常", "", "", "4D中", "2A中", "2A國", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T11",
+	                        Mon: ["", "", "1A人", "", "", "", "4D人", "1A數", "1A數", "", "6A常", "6A常", "", "", "", ""],
+	                        Tue: ["", "", "", "", "1A數", "", "", "1D視", "1D視", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "1A人", "", "6A常", "", "1A數", "", "4D人", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "6A常", "6A電", "6A電", "", "1A數", "", "4D人", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "1A數", "1A數", "1A人", "", "", "", "6A常", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T12",
+	                        Mon: ["", "", "3A數", "5D數", "5D數", "", "", "", "", "", "6D常", "6D常", "", "", "3A閱", "3A數"],
+	                        Tue: ["", "", "6D電", "6D電", "", "", "5D數", "6D常", "3A數", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "6D常", "", "3A數", "3A數", "5D數", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "3A數", "3A數", "", "", "", "", "6D常", "", "5D數", "5D數", "", "", "5D閱", "5D數"],
+	                        Fri: ["", "", "", "5D數", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T13",
+	                        Mon: ["", "", "5D常", "2D常", "", "", "1B音", "3E音", "2C音", "", "", "6E音", "", "", "1A閱", "1A導"],
+	                        Tue: ["", "", "", "4D音", "", "", "2D常", "2D常", "2D音", "", "5D常", "5D常", "", "", "", ""],
+	                        Wed: ["", "", "3D音", "", "5D常", "", "2D常", "", "6E音", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "5D常", "", "2D常", "4D音", "3E音", "", "1A音", "3D音", "", "", "", ""],
+	                        Fri: ["", "", "2C音", "1B音", "2D音", "", "", "", "1A音", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T14",
+	                        Mon: ["", "", "", "2A音", "6B音", "", "1D音", "4C音", "", "", "4A音", "", "", "", "", ""],
+	                        Tue: ["", "", "2B音", "6B音", "5B音", "", "3A音", "", "5A音", "", "1D音", "", "", "", "1A閱", "1A導"],
+	                        Wed: ["", "", "", "", "4A音", "", "2B音", "4B音", "5C音", "", "3B音", "5B音", "", "", "", ""],
+	                        Thu: ["", "", "2A音", "", "5A音", "", "3B音", "", "4B音", "", "3A音", "", "", "", "2C閱", "2C導"],
+	                        Fri: ["", "", "", "", "", "", "", "5C音", "4C音", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T15",
+	                        Mon: ["", "", "4A科", "4A科", "6E常", "", "", "1D科", "", "", "", "", "", "", "2A閱", "2A導"],
+	                        Tue: ["", "", "", "", "", "", "4A科", "", "6E常", "", "6C電/6E電", "6C電/6E電", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "6E常", "4B人", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "4B人", "", "", "6E常", "6E常", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "1D科", "1D科", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T16",
+	                        Mon: ["", "", "3B英", "3B視", "3B視", "", "", "", "4C英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "6D電", "6D電", "", "", "", "", "4C英", "", "3B英", "3B英", "", "", "3B閱", "3B英"],
+	                        Wed: ["", "", "", "", "", "", "3B英", "", "", "", "4C英", "4C英", "", "", "", ""],
+	                        Thu: ["", "", "", "2C視", "2C視", "", "4C英", "4C英", "", "", "", "", "", "", "4C閱", "4C英"],
+	                        Fri: ["", "", "", "4C英", "4C英", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T17",
+	                        Mon: ["", "", "6C國", "6C中", "", "", "2A常", "2A常", "", "", "3A中", "3A國", "", "", "6C閱", "6C中"],
+	                        Tue: ["", "", "", "6C中", "6C中", "", "2A常", "", "", "", "3A中", "3A中", "", "", "3A閱", "3A中"],
+	                        Wed: ["", "", "", "", "2A常", "", "6C中", "", "3A中", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "6C中", "6C中", "", "", "3A中", "3A中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "6C中", "2A常", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T18",
+	                        Mon: ["", "", "", "4B英", "4B英", "", "2C電", "2C電", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "", "", "", "", "4B英", "4B英", "", "6C電/6E電", "6C電/6E電", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "5E電", "5E電", "", "", "", "4B英", "", "", "4A循/4D循", ""],
+	                        Thu: ["", "", "", "6A電/6B電", "6A電/6B電", "", "", "3C電/3D電", "3C電/3D電", "", "4B英", "4B英", "", "", "4B閱", "4B英"],
+	                        Fri: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T19",
+	                        Mon: ["", "", "2A佛", "", "2C中", "", "", "", "3E普", "", "3E中", "3E中", "", "", "", ""],
+	                        Tue: ["", "", "2C普", "2C中", "2C中", "", "", "", "3B普", "", "3E中", "3E國", "", "", "3E閱", "3E中"],
+	                        Wed: ["", "", "", "3E中", "3E中", "", "3E電", "3E電", "", "", "2C中", "2C國", "", "", "2B循", ""],
+	                        Thu: ["", "", "2B佛", "", "3E中", "", "", "2C中", "2C中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "2C中", "", "", "", "", "3E中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T20",
+	                        Mon: ["", "", "6B數", "6B數", "", "", "", "5E普", "4A數", "", "5A普", "", "", "", "6B閱", "6B數"],
+	                        Tue: ["", "", "6B數", "", "", "", "", "4A數", "4A數", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "4A數", "4A數", "", "", "1C人", "", "6B數", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "4A數", "5B普", "", "", "6B數", "", "", "", "1C人", "", "", "", "4A閱", "4A數"],
+	                        Fri: ["", "", "4A數", "", "", "", "1C人", "6B數", "6B數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T21",
+	                        Mon: ["", "", "", "", "", "", "6E中", "6E中", "", "", "1A中", "1A中", "", "", "6E閱", "6E中"],
+	                        Tue: ["", "", "", "", "", "", "6E中", "6E中", "", "", "1A中", "1A國", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "1A中", "1A中", "", "6E中", "6E國", "", "", "", ""],
+	                        Thu: ["", "", "1A中", "", "", "", "6E中", "", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "1A中", "", "6E中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T22",
+	                        Mon: ["", "", "", "", "2A普", "", "", "", "", "", "", "", "", "", "1C閱", "1C導"],
+	                        Tue: ["", "", "1B普", "1B普", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "6E循", ""],
+	                        Thu: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T23",
+	                        Mon: ["", "", "5E英", "5E英", "", "", "5E音", "", "3A英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "3A英", "3A英", "3C音", "", "", "", "6D音", "", "5E英", "5E英", "", "", "5E閱", "5E英"],
+	                        Wed: ["", "", "", "", "5E英", "", "", "", "5E音", "", "3A英", "3A英", "", "", "", ""],
+	                        Thu: ["", "", "", "", "3A英", "", "", "5E英", "5E英", "", "", "3C音", "", "", "3A閱", "3A英"],
+	                        Fri: ["", "", "5E英", "", "6D音", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T24",
+	                        Mon: ["", "", "4D英", "", "4A英", "", "2C電/2D電", "2C電/2D電", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "4A英", "4A英", "", "", "4D電", "4D電", "", "", "4D英", "4D英", "", "", "4A閱", "4A英"],
+	                        Wed: ["", "", "4D英", "4D英", "", "", "", "4A英", "4A英", "", "2B電", "2B電", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "", "4A英", "4A英", "", "4D英", "4D英", "", "", "4D閱", "4D英"],
+	                        Fri: ["", "", "4D英", "", "4A英", "", "4A電", "4A電", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T25",
+	                        Mon: ["", "", "6E英", "6E英", "", "", "", "", "6A英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "6E英", "6E英", "", "", "6A英", "6A英", "", "", "", "", "", "", "6E閱", "6E英"],
+	                        Wed: ["", "", "", "", "", "", "6E英", "", "6A英", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "6E英", "", "", "", "", "", "", "", "", "", "6A閱", "6A英"],
+	                        Fri: ["", "", "", "6E英", "6E英", "", "6A英", "6A英", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T26",
+	                        Mon: ["", "", "", "", "", "", "", "6C數", "4B數", "", "", "", "", "", "4B閱", "4B數"],
+	                        Tue: ["", "", "4B數", "4B數", "", "", "6C數", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "4B數", "6C數", "6C數", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "4B數", "4B數", "", "", "", "", "", "", "6C數", "6C數", "", "", "6C閱", "6C數"],
+	                        Fri: ["", "", "6C數", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T27",
+	                        Mon: ["", "", "", "2B中", "2B國", "", "4A中", "4A國", "6D普", "", "", "4A普", "", "", "4A閱", "4A中"],
+	                        Tue: ["", "", "", "", "4A中", "", "2B普", "", "", "", "2B中", "2B中", "", "", "", ""],
+	                        Wed: ["", "", "2B中", "2B中", "", "", "1D佛", "", "", "", "4A中", "4A中", "", "", "3A循", ""],
+	                        Thu: ["", "", "", "4A中", "4A中", "", "", "", "2B中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "3E佛", "", "2B中", "", "4A中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T28",
+	                        Mon: ["", "", "", "", "", "", "6D佛", "", "5E中", "", "6E佛", "5A佛", "", "", "5E閱", "5E中"],
+	                        Tue: ["", "", "", "", "", "", "", "", "5E中", "", "", "", "", "", "2A閱", "2A導"],
+	                        Wed: ["", "", "5E中", "5E中", "", "", "", "", "", "", "5B佛", "3B佛", "", "", "4B循", ""],
+	                        Thu: ["", "", "5E中", "5E中", "", "", "", "", "6C佛", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "5E中", "5E國", "", "4A電", "4A電", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T29",
+	                        Mon: ["", "", "", "", "2D英", "", "6B英", "6B英", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "", "6B英", "", "", "", "", "", "", "2D英", "", "", "2D閱", "2D導"],
+	                        Wed: ["", "", "2D英", "2D英", "", "", "", "", "", "", "6B英", "6B英", "", "", "3C循", ""],
+	                        Thu: ["", "", "2D英", "2D英", "", "", "", "", "", "", "6B英", "6B英", "", "", "6B閱", "6B英"],
+	                        Fri: ["", "", "2D英", "2D英", "", "", "6B英", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T30",
+	                        Mon: ["", "", "", "5A中", "5A中", "", "", "4D視", "4D視", "", "5D視", "5D視", "", "", "5A閱", "5A中"],
+	                        Tue: ["", "", "5B視", "5B視", "", "", "5A視", "5A視", "", "", "5A中", "5A中", "", "", "", ""],
+	                        Wed: ["", "", "5A電/5D電", "5A電/5D電", "5A國", "", "", "", "5A中", "", "6A視", "6A視", "", "", "5A循", ""],
+	                        Thu: ["", "", "6D視", "6D視", "", "", "5A中", "", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "5A中", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T31",
+	                        Mon: ["", "", "5C常", "5C常", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "5C視", "5C視", "", "", "", "6C常", "6C常", "", "", "5C常", "", "", "", ""],
+	                        Wed: ["", "", "6C常", "", "5C常", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "6C常", "", "", "", "", "", "5C常", "", "5E視", "5E視", "", "", "1B閱", "1B導"],
+	                        Fri: ["", "", "", "", "6C常", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T32",
+	                        Mon: ["", "", "6A中", "6A中", "", "", "6C音", "", "5D音", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "", "6A中", "", "", "", "6A音", "", "", "", "", "", "6A閱", "6A中"],
+	                        Wed: ["", "", "", "", "", "", "6A中", "6A音", "", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "", "6A中", "6A中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "6A中", "6A國", "", "5D音", "", "6C音", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T33",
+	                        Mon: ["", "", "", "", "", "", "", "5C中", "5C國", "", "5B中", "5B國", "", "", "5C閱", "5C中"],
+	                        Tue: ["", "", "", "", "5C中", "", "", "5B中", "5B中", "", "2D佛", "2C佛", "", "", "5B閱", "5B中"],
+	                        Wed: ["", "", "5B中", "5B中", "", "", "", "", "", "", "5C中", "5C中", "", "", "5B循", ""],
+	                        Thu: ["", "", "", "", "5B中", "", "5C中", "5C中", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "5B中", "", "5C中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T34",
+	                        Mon: ["", "", "4B普", "", "", "", "", "", "", "", "", "", "", "", "2C閱", "2C導"],
+	                        Tue: ["", "", "", "", "", "", "", "3A普", "", "", "6A普", "", "", "", "2B閱", "2B導"],
+	                        Wed: ["", "", "", "", "3C普", "", "4C普", "", "", "", "", "", "", "", "5E循", ""],
+	                        Thu: ["", "", "4D普", "", "", "", "", "", "", "", "", "", "", "", "2B閱", "2B導"],
+	                        Fri: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T35",
+	                        Mon: ["", "", "", "", "", "", "", "", "2D中", "", "6B中", "6B中", "", "", "", ""],
+	                        Tue: ["", "", "", "", "2D中", "", "", "6B中", "6B中", "", "1C視", "1C視", "", "", "6B閱", "6B中"],
+	                        Wed: ["", "", "", "1A視", "1A視", "", "6B中", "6B國", "", "", "2D中", "2D國", "", "", "6B循", ""],
+	                        Thu: ["", "", "6B中", "", "2D普", "", "", "2D中", "2D中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "6B中", "", "2D中", "2D中", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T36",
+	                        Mon: ["", "", "", "1D普", "1D普", "", "", "6D中", "6B佛", "", "1D中", "1D中", "", "", "6D閱", "6D中"],
+	                        Tue: ["", "", "3D普", "", "", "", "6D中", "", "", "", "5C佛", "1D中", "", "", "", ""],
+	                        Wed: ["", "", "6D中", "6D中", "6E普", "", "", "", "", "", "1D中", "1D國", "", "", "6A循", ""],
+	                        Thu: ["", "", "", "1D中", "1D中", "", "6D中", "6D中", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "6D中", "6D國", "1D中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T37",
+	                        Mon: ["", "", "3C數", "", "", "", "3D視", "3D視", "6E數", "", "3C視", "3C視", "", "", "3C閱", "3C數"],
+	                        Tue: ["", "", "3C數", "3C數", "6E數", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "6E數", "6E數", "", "", "", "6C視", "6C視", "", "3C數", "3C數", "", "", "", ""],
+	                        Thu: ["", "", "", "", "3C數", "", "", "6B視", "6B視", "", "6E數", "6E數", "", "", "6E閱", "6E數"],
+	                        Fri: ["", "", "6E數", "", "3C數", "", "6E視", "6E視", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T38",
+	                        Mon: ["", "", "", "", "6D英", "", "1A英", "", "1D英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "1D英", "1D英", "", "1A英", "1A英", "", "", "6D英", "6D英", "", "", "6D閱", "6D英"],
+	                        Wed: ["", "", "1D英", "1D英", "", "", "", "", "6D英", "", "1A英", "1A英", "", "", "2D循", ""],
+	                        Thu: ["", "", "", "1A英", "1A英", "", "1D英", "1D英", "", "", "6D英", "6D英", "", "", "", ""],
+	                        Fri: ["", "", "6D英", "6D英", "1D英", "", "", "1A英", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T39",
+	                        Mon: ["", "", "", "", "6C英", "", "2B英", "", "2A英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "6C英", "2B英", "2B英", "", "", "2A英", "2A英", "", "", "", "", "", "6C閱", "6C英"],
+	                        Wed: ["", "", "", "", "", "", "2A英", "2B英", "2B英", "", "6C英", "6C英", "", "", "2C循", ""],
+	                        Thu: ["", "", "", "2A英", "2A英", "", "6C英", "6C英", "", "", "2B英", "2B英", "", "", "", ""],
+	                        Fri: ["", "", "2A英", "2A英", "", "", "6C英", "6C英", "2B英", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T40",
+	                        Mon: ["", "", "4C人", "", "", "", "3A視", "3A視", "5A常", "", "2C數", "2C數", "", "", "", ""],
+	                        Tue: ["", "", "1D人", "", "5A常", "", "4C電", "4C電", "2C數", "", "", "", "", "", "1B閱", "1B導"],
+	                        Wed: ["", "", "5D電", "5D電", "1D人", "", "2C數", "4C人", "", "", "", "", "", "", "1C循", ""],
+	                        Thu: ["", "", "", "", "4C人", "", "2C數", "5A常", "5A常", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "2C數", "2C數", "5A常", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T41",
+	                        Mon: ["", "", "1C國", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "1C音", "", "4D科", "", "1C中", "", "1A科", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "", "", "", "1C中", "1C中", "", "", "", "", "", "4C循", ""],
+	                        Thu: ["", "", "1C音", "1C中", "1C中", "", "", "1A科", "1A科", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "4D科", "4D科", "", "", "1C中", "1C中", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T42",
+	                        Mon: ["", "", "2C英", "2C英", "", "", "", "", "1C英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "", "1C英", "1C英", "", "2C英", "2C英", "", "", "", "", "", "", "2C閱", "2C導"],
+	                        Wed: ["", "", "", "", "2C英", "", "", "", "", "", "1C英", "1C英", "", "", "5C循", ""],
+	                        Thu: ["", "", "", "", "", "", "1C英", "", "", "", "2C英", "2C英", "", "", "1C閱", "1C導"],
+	                        Fri: ["", "", "1C英", "1C英", "2C英", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T43",
+	                        Mon: ["", "", "3E數", "3E數", "", "", "6A體", "6A體", "", "", "5C數", "5C數", "", "", "", ""],
+	                        Tue: ["", "", "3E數", "", "", "", "3E體", "3E體", "5C數", "", "", "", "", "", "5C閱", "5C數"],
+	                        Wed: ["", "", "6B體", "6B體", "", "", "5C數", "5C數", "3E數", "", "4D體", "4D體", "", "", "", ""],
+	                        Thu: ["", "", "5C數", "", "", "", "3E數", "3E數", "", "", "1D體", "1D體", "", "", "3E閱", "3E數"],
+	                        Fri: ["", "", "3E數", "", "5C數", "", "", "3C體", "3C體", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T44",
+	                        Mon: ["", "", "5A數", "1A體", "1A體", "", "", "", "", "", "4D數", "4D數", "", "", "4D閱", "4D數"],
+	                        Tue: ["", "", "4D數", "5A數", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "4D數", "", "", "", "", "", "5A數", "5A數", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "4D數", "", "", "", "5A數", "5A數", "", "", "5A閱", "5A數"],
+	                        Fri: ["", "", "", "5A數", "", "", "", "4D數", "4D數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T45",
+	                        Mon: ["", "", "", "1C普", "1C普", "", "3C中", "", "6C普", "", "4B中", "4B中", "", "", "", ""],
+	                        Tue: ["", "", "1B普", "1B普", "4B中", "", "6B普", "", "", "", "3C中", "3C中", "", "", "4B閱", "4B中"],
+	                        Wed: ["", "", "", "", "1C佛", "", "4B中", "3C中", "3C中", "", "4B國", "", "", "", "", ""],
+	                        Thu: ["", "", "3C國", "3C中", "", "", "4B中", "4B中", "", "", "", "", "", "", "3C閱", "3C中"],
+	                        Fri: ["", "", "3C中", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T46",
+	                        Mon: ["", "", "6D數", "6D數", "", "", "4C數", "", "", "", "", "", "", "", "4C閱", "4C數"],
+	                        Tue: ["", "", "4C數", "", "6D數", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "4C數", "", "", "", "", "", "6D數", "6D數", "", "", "", ""],
+	                        Thu: ["", "", "4C數", "4C數", "6D數", "", "", "", "", "", "1B體", "1B體", "", "", "6D閱", "6D數"],
+	                        Fri: ["", "", "", "", "", "", "4C數", "4C數", "6D數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T47",
+	                        Mon: ["", "", "", "", "", "", "", "", "3B數", "", "3D數", "3D數", "", "", "3D閱", "3D數"],
+	                        Tue: ["", "", "3B數", "3D數", "3D數", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "3B數", "3B數", "", "", "4A人", "", "3D數", "", "", "", "", "", "", ""],
+	                        Thu: ["", "", "", "3D數", "", "", "4A人", "3B數", "3B數", "", "", "", "", "", "3B閱", "3B數"],
+	                        Fri: ["", "", "", "4A人", "", "", "", "", "3D數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T48",
+	                        Mon: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "2D閱", "2D導"],
+	                        Tue: ["", "", "", "", "", "", "", "", "", "", "2C常", "", "", "", "1C閱", "1C導"],
+	                        Wed: ["", "", "2C常", "2C常", "", "", "", "", "", "", "", "", "", "", "6D循", ""],
+	                        Thu: ["", "", "2C常", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "", "", "2C常", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T49",
+	                        Mon: ["", "", "", "4C中", "4C中", "", "", "5D中", "", "", "4C視", "4C視", "", "", "5D閱", "5D中"],
+	                        Tue: ["", "", "2A視", "2A視", "", "", "", "5D中", "5D中", "", "4C中", "4C中", "", "", "4C閱", "4C中"],
+	                        Wed: ["", "", "4C國", "4C中", "", "", "3C佛", "", "", "", "5D中", "5D國", "", "", "", ""],
+	                        Thu: ["", "", "5D中", "5D中", "", "", "", "", "4C中", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "4C中", "", "5D中", "", "", "", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T50",
+	                        Mon: ["", "", "", "1B中", "1B中", "", "3B中", "3B國", "", "", "5E常", "5E常", "", "", "3B閱", "3B中"],
+	                        Tue: ["", "", "", "", "5E常", "", "", "3B中", "", "", "1B中", "1B國", "", "", "", ""],
+	                        Wed: ["", "", "1B視", "1B視", "1B中", "", "", "3B中", "3B中", "", "", "", "", "", "1A循", ""],
+	                        Thu: ["", "", "3B中", "3B中", "", "", "1B中", "1B中", "", "", "", "", "", "", "2D閱", "2D導"],
+	                        Fri: ["", "", "1B中", "", "", "", "5E常", "5E常", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T51",
+	                        Mon: ["", "", "", "", "", "", "5D英", "1B英", "1B英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "5D英", "", "", "", "1B英", "1B英", "1B人", "", "", "", "", "", "5D閱", "5D英"],
+	                        Wed: ["", "", "", "", "", "", "5D英", "5D英", "1B人", "", "", "1B英", "", "", "5D循", ""],
+	                        Thu: ["", "", "1B英", "1B英", "1B人", "", "", "5D英", "5D英", "", "", "", "", "", "", ""],
+	                        Fri: ["", "", "", "", "", "", "1B英", "5D英", "5D英", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T52",
+	                        Mon: ["", "", "2B常", "3C常", "3C常", "", "3E常", "", "", "", "2B視", "2B視", "", "", "1B閱", "1B導"],
+	                        Tue: ["", "", "", "", "", "", "3C常", "2B常", "3E常", "", "4A視", "4A視", "", "", "", ""],
+	                        Wed: ["", "", "3E常", "4B視", "4B視", "", "", "", "", "", "", "", "", "", "3B循", ""],
+	                        Thu: ["", "", "3E常", "3E常", "", "", "2B常", "2B常", "", "", "3C常", "", "", "", "1A閱", "1A導"],
+	                        Fri: ["", "", "2B常", "3C常", "", "", "3E視", "3E視", "", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T53",
+	                        Mon: ["", "", "", "", "5E數", "", "", "", "", "", "1C數", "1C數", "", "", "", ""],
+	                        Tue: ["", "", "5E數", "5E數", "", "", "1D數", "1C數", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "1C數", "1C數", "", "", "", "1D數", "1D數", "", "5E數", "5E數", "", "", "1B循", ""],
+	                        Thu: ["", "", "", "", "", "", "5E數", "", "1D數", "", "", "1C數", "", "", "5E閱", "5E數"],
+	                        Fri: ["", "", "1D數", "1D數", "1C數", "", "", "", "5E數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T54",
+	                        Mon: ["", "", "2D數", "", "", "", "", "", "", "", "1B數", "1B數", "", "", "", ""],
+	                        Tue: ["", "", "2D數", "2D數", "1B數", "", "", "", "", "", "", "", "", "", "", ""],
+	                        Wed: ["", "", "", "", "2D數", "", "1B數", "1B數", "", "", "", "", "", "", "3E循", ""],
+	                        Thu: ["", "", "", "", "", "", "", "", "1B數", "", "2D數", "2D數", "", "", "2A閱", "2A導"],
+	                        Fri: ["", "", "", "", "1B數", "", "", "", "2D數", "", "", "", "", "", "", ""]
+	        },
+	{ name: "T55",
+	                        Mon: ["", "", "5B英", "1C普", "1C普", "", "", "3C英", "3C英", "", "", "", "", "", "", ""],
+	                        Tue: ["", "", "1A普", "1A普", "", "", "", "3C英", "3C英", "", "5B英", "5B英", "", "", "3C閱", "3C英"],
+	                        Wed: ["", "", "3C英", "3C英", "", "", "", "5B英", "5B英", "", "2A電/2B電", "2A電/2B電", "", "", "", ""],
+	                        Thu: ["", "", "", "", "", "", "3C英", "5B英", "5B英", "", "5B電/5C電", "5B電/5C電", "", "", "5B閱", "5B英"],
+	                        Fri: ["", "", "", "", "5B英", "", "3C英", "", "", "", "", "", "", "", "", ""]
+	        }
+];
+
+        class DataManager {
+            constructor() { 
+                // 處理老師數據，確保 UI 只有代號，覆蓋任何可能留下的真實姓名
+                this.teachers = teachersRaw.map((t, idx) => {
+                    const code = `T${(idx + 1).toString().padStart(2, '0')}`;
+                    return {
+                        ...t,
+                        name: code, 
+                        id: idx + 1,
+                        displayName: code
+                    };
+                });
+            }
+            getSchedule(name, day) {
+                const dayKey = { "星期一": "Mon", "星期二": "Tue", "星期三": "Wed", "星期四": "Thu", "星期五": "Fri" }[day];
+                const t = this.teachers.find(x => x.name === name);
+                return t ? t[dayKey] : null;
+            }
+            isLessonFree(name, day, pIdx) {
+                const sched = this.getSchedule(name, day);
+                if (!sched) return false;
+                const content = sched[pIdx] ? sched[pIdx].trim() : "";
+                if (content === "" || content.includes("備")) return true;
+                return !CONFIG.busyKeys.some(k => content.includes(k));
+            }
+            getWorkload(name, day) {
+                const sched = this.getSchedule(name, day);
+                let count = 0;
+                if(!sched) return 0;
+                sched.forEach((c, idx) => {
+                    const p = CONFIG.PERIODS[idx];
+                    if (p.type === 'lesson' && !this.isLessonFree(name, day, idx)) count++;
+                });
+                return count;
+            }
+        }
+
+        class App {
+            constructor() {
+                this.db = new DataManager();
+                this.subAssignments = {};
+                this.init();
+            }
+
+            init() {
+                const tabs = document.getElementById('navTabs');
+                TAB_CONFIG.forEach(tab => {
+                    const b = document.createElement('button');
+                    b.className = "py-4 px-4 md:px-6 font-bold text-slate-500 transition-all border-b-2 border-transparent text-sm md:text-base whitespace-nowrap";
+                    b.id = `tab-btn-${tab.id}`;
+                    b.innerHTML = `<i class="fa-solid ${tab.icon} mr-2"></i> ${tab.label}`;
+                    b.onclick = () => this.switchTab(tab.id);
+                    tabs.appendChild(b);
+                });
+
+                this.populateSelect('f1-day', CONFIG.DAYS);
+                this.populateSelect('f1-period', CONFIG.PERIODS.map(p => `${p.label} (${p.time})`));
+                
+                // 使用代號填充下拉清單
+                this.populateSelect('f2-teacher', this.db.teachers.map(x => x.displayName), this.db.teachers.map(x => x.name));
+                this.populateSelect('f4-day', CONFIG.DAYS);
+                this.populateSelect('f4-period', CONFIG.PERIODS.map(p => `${p.label} (${p.time})`));
+                this.populateSelect('f5-teacher', this.db.teachers.map(x => x.displayName), this.db.teachers.map(x => x.name));
+
+                const list = document.getElementById('f3-teacher-list');
+                this.db.teachers.forEach(t => {
+                    const l = document.createElement('label');
+                    l.className = "flex items-center gap-2 p-2 bg-white rounded border cursor-pointer hover:bg-indigo-50 transition shadow-sm";
+                    l.innerHTML = `<input type="checkbox" name="f3-t" value="${t.name}"> <span class="text-xs font-bold">${t.displayName}</span>`;
+                    list.appendChild(l);
+                });
+
+                const subP = document.getElementById('f5-periods-select');
+                CONFIG.PERIODS.forEach(p => {
+                    const l = document.createElement('label');
+                    l.className = "flex items-center gap-2 p-2 bg-white rounded border cursor-pointer hover:bg-red-50 transition shadow-sm";
+                    l.innerHTML = `<input type="checkbox" name="f5-p" value="${p.key}" checked> <span class="text-xs font-bold">${p.label}</span>`;
+                    subP.appendChild(l);
+                });
+
+                document.getElementById('f5-date').valueAsDate = new Date();
+                this.switchTab('section-overview');
+            }
+
+            switchTab(id) {
+                document.querySelectorAll('.feature-section').forEach(s => s.classList.add('hidden'));
+                document.querySelectorAll('#navTabs button').forEach(b => b.classList.remove('tab-active'));
+                const target = document.getElementById(id);
+                if (target) target.classList.remove('hidden');
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (btn) btn.classList.add('tab-active');
+            }
+
+            populateSelect(id, items, values = null) {
+                const s = document.getElementById(id);
+                if (!s) return;
+                s.innerHTML = "";
+                items.forEach((item, idx) => {
+                    const o = document.createElement('option');
+                    o.value = values ? values[idx] : item;
+                    o.text = item;
+                    s.add(o);
+                });
+            }
+
+            showTeacherTimetable() {
+                const name = document.getElementById('f2-teacher').value;
+                const container = document.getElementById('f2-result');
+                if(!name) return;
+                const dayKeys = ["星期一","星期二","星期三","星期四","星期五"];
+                const scheds = dayKeys.map(d => this.db.getSchedule(name, d));
+                let h = `<table class="w-full border shadow-sm rounded-xl overflow-hidden text-sm"><thead class="bg-slate-100 text-slate-600"><tr>
+                    <th class="p-3 text-left whitespace-nowrap">時段</th>
+                    <th class="p-3 text-left whitespace-nowrap text-slate-400">時間</th>
+                    ${dayKeys.map(d => `<th class="p-3 text-center font-bold">${d}</th>`).join('')}
+                </tr></thead><tbody class="divide-y">`;
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    const rowBusy = scheds.some(s => s && s[idx] && s[idx].trim() !== "" && !s[idx].includes("備"));
+                    h += `<tr class="${rowBusy ? 'bg-white' : 'bg-slate-50/50'}">
+                        <td class="p-3 font-bold text-slate-700 whitespace-nowrap">${p.label}</td>
+                        <td class="p-3 text-slate-400 whitespace-nowrap">${p.time}</td>
+                        ${scheds.map(s => {
+                            const val = (s && s[idx]) ? s[idx].trim() : "";
+                            const busy = val !== "" && !val.includes("備");
+                            return `<td class="p-3 text-center font-bold ${busy ? 'text-blue-700' : 'text-slate-300'}">${val || '—'}</td>`;
+                        }).join('')}
+                    </tr>`;
+                });
+                h += `</tbody></table>`;
+                container.innerHTML = h;
+            }
+
+            findFreeTeachers() {
+                const day = document.getElementById('f1-day').value;
+                const pLabel = document.getElementById('f1-period').value;
+                const pIdx = CONFIG.PERIODS.findIndex(p => `${p.label} (${p.time})` === pLabel);
+                const container = document.getElementById('f1-result');
+                container.innerHTML = "";
+
+                const freeList = this.db.teachers.filter(t => {
+                    const sched = this.db.getSchedule(t.name, day);
+                    const content = (sched && sched[pIdx]) ? sched[pIdx].trim() : "";
+                    return content === "";
+                });
+
+                if (!freeList.length) {
+                    container.innerHTML = `<div class="col-span-full p-10 text-center text-slate-400 bg-white rounded-xl border">此時段無完全空堂教師</div>`;
+                    return;
+                }
+
+                freeList.forEach(t => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded-xl border-l-4 border-green-500 shadow-sm hover:shadow-md transition";
+                    card.innerHTML = `
+                        <div class="font-bold text-slate-800">代號: ${t.displayName}</div>
+                        <div class="text-xs text-green-500 mt-1 font-medium">完全空堂</div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            findDuties() {
+                const day = document.getElementById('f4-day').value;
+                const pLabel = document.getElementById('f4-period').value;
+                const pIdx = CONFIG.PERIODS.findIndex(p => `${p.label} (${p.time})` === pLabel);
+                const container = document.getElementById('f4-result');
+                container.innerHTML = "";
+                const group = {};
+                this.db.teachers.forEach(t => {
+                    const sched = this.db.getSchedule(t.name, day);
+                    const val = (sched && sched[pIdx]) ? sched[pIdx].trim() : "";
+                    if(val !== "" && !val.includes("備")) {
+                        if(!group[val]) group[val] = [];
+                        group[val].push(t.displayName);
+                    }
+                });
+                if(Object.keys(group).length === 0) {
+                    container.innerHTML = `<div class="col-span-full p-10 text-center text-slate-400">此時段無具體職務紀錄</div>`;
+                    return;
+                }
+                for(const [duty, list] of Object.entries(group)) {
+                    const d = document.createElement('div');
+                    d.className = "bg-teal-50 border border-teal-100 p-5 rounded-2xl shadow-sm";
+                    d.innerHTML = `<div class="font-bold text-teal-800 mb-2 border-b border-teal-200 pb-2">${duty}</div><div class="flex flex-wrap gap-2">${list.map(n => `<span class="bg-white px-3 py-1 rounded-lg text-sm border border-teal-200 font-bold shadow-xs">${n}</span>`).join('')}</div>`;
+                    container.appendChild(d);
+                }
+            }
+
+            findCommonFree() {
+                const selected = Array.from(document.querySelectorAll('input[name="f3-t"]:checked')).map(i => i.value);
+                const container = document.getElementById('f3-result');
+                if(selected.length < 2) return this.showMessage("請至少選擇兩位代號教師", "error");
+                const days = ["星期一","星期二","星期三","星期四","星期五"];
+                let html = `<div class="space-y-6">`;
+                let totalFree = 0;
+                days.forEach(day => {
+                    const freeSlots = CONFIG.PERIODS.filter((p, idx) => selected.every(name => this.db.isLessonFree(name, day, idx)));
+                    totalFree += freeSlots.length;
+                    html += `<div>
+                        <h3 class="font-bold text-indigo-900 mb-3 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-indigo-400 inline-block"></span>${day}
+                            <span class="text-xs font-normal text-indigo-400">${freeSlots.length ? `共同空堂 ${freeSlots.length} 個` : '無共同空堂'}</span>
+                        </h3>`;
+                    if(freeSlots.length) {
+                        html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">${freeSlots.map(s => `<div class="bg-indigo-50 p-3 rounded-xl border border-indigo-200 flex flex-col"><span class="font-bold text-indigo-700 text-sm">${s.label}</span><span class="text-xs text-indigo-400">${s.time}</span></div>`).join('')}</div>`;
+                    } else {
+                        html += `<div class="text-sm text-slate-400 italic pl-4">— 無共同空堂</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+                container.innerHTML = totalFree === 0
+                    ? `<div class="p-10 bg-red-50 text-red-600 rounded-2xl text-center">整週均無共同空堂</div>`
+                    : html;
+            }
+
+            generateSubRecommendations() {
+                const absent = document.getElementById('f5-teacher').value;
+                const dateIn = document.getElementById('f5-date').value;
+                if(!dateIn) return this.showMessage("請選擇日期", "error");
+                const day = CONFIG.DAYS[new Date(dateIn).getDay()-1];
+                if(!day) return this.showMessage("週六/日無需代課", "error");
+
+                const selectedPKeys = Array.from(document.querySelectorAll('input[name="f5-p"]:checked')).map(i => i.value);
+                const workspace = document.getElementById('f5-workspace');
+                workspace.innerHTML = ""; workspace.classList.remove('hidden');
+
+                const absentSched = this.db.getSchedule(absent, day);
+                selectedPKeys.forEach(pkey => {
+                    const pIdx = CONFIG.PERIODS.findIndex(p => p.key === pkey);
+                    const pInfo = CONFIG.PERIODS[pIdx];
+                    const isActuallyFree = this.db.isLessonFree(absent, day, pIdx);
+                    const content = (absentSched && absentSched[pIdx]) ? absentSched[pIdx] : "";
+                    
+                    const block = document.createElement('div');
+                    block.className = `p-6 rounded-2xl border-2 transition ${isActuallyFree ? 'bg-slate-50 border-slate-200 opacity-60' : 'bg-white border-red-50 shadow-md'}`;
+                    
+                    if (isActuallyFree) {
+                        block.innerHTML = `<div class="flex justify-between items-center"><div><span class="bg-slate-300 text-white text-xs font-bold px-2 py-1 rounded mr-2 uppercase">${pInfo.label}</span><span class="font-bold text-slate-400 italic">空堂 / 備課 (無需代課)</span></div><i class="fa-solid fa-mug-hot text-slate-200"></i></div>`;
+                    } else {
+                        block.innerHTML = `<div class="flex justify-between items-center mb-6 border-b pb-4"><div><span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mr-2 uppercase">${pInfo.label}</span><span class="font-bold text-slate-800 text-lg">${content}</span></div><div class="text-xs font-bold text-red-400" id="status-${pkey}"><i class="fa-solid fa-triangle-exclamation"></i> 未指派</div></div><div id="cand-${pkey}" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>`;
+                    }
+                    workspace.appendChild(block);
+                    if (!isActuallyFree) this.renderCandidates(day, pIdx, pkey);
+                });
+
+                const btnContainer = document.createElement('div');
+                btnContainer.className = "pt-12 text-center";
+                btnContainer.innerHTML = `<button onclick="app.downloadReceipt()" class="bg-slate-900 hover:bg-black text-white px-12 py-4 rounded-2xl font-bold shadow-2xl transition flex items-center justify-center gap-3 mx-auto text-lg transform hover:scale-105"><i class="fa-solid fa-file-invoice"></i> 下載代課指派單 (代號版)</button>`;
+                workspace.appendChild(btnContainer);
+            }
+
+            renderCandidates(day, pIdx, pkey) {
+                const absent = document.getElementById('f5-teacher').value;
+                const container = document.getElementById(`cand-${pkey}`);
+                const cands = this.db.teachers
+                    .filter(t => t.name !== absent && this.db.isLessonFree(t.name, day, pIdx))
+                    .map(t => ({ name: t.name, displayName: t.displayName, load: this.db.getWorkload(t.name, day) }))
+                    .sort((a, b) => a.load - b.load);
+
+                if (!cands.length) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic">此時段暫無空堂教師</p>`;
+                    return;
+                }
+
+                container.innerHTML = cands.map(c => {
+                    const isAssignedHere = this.subAssignments[pkey] === c.name;
+                    const assignedElsewhere = Object.entries(this.subAssignments)
+                        .filter(([k, v]) => k !== pkey && v === c.name).length;
+                    const btnClass = isAssignedHere
+                        ? 'bg-blue-600 text-white border-blue-800 shadow-inner'
+                        : assignedElsewhere > 0
+                            ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
+                            : 'bg-white text-slate-600 border-slate-100 hover:bg-blue-50';
+                    const badge = (!isAssignedHere && assignedElsewhere > 0)
+                        ? `<span class="text-[10px] font-bold bg-orange-200 text-orange-700 px-1.5 py-0.5 rounded-full mt-1">已代 ${assignedElsewhere} 堂</span>`
+                        : '';
+                    return `
+                        <button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="flex flex-col items-center p-3 border-2 rounded-xl transition ${btnClass}">
+                            <span class="text-sm font-bold">${c.displayName}</span>
+                            <span class="text-[10px] opacity-60">今日課量: ${c.load}節</span>
+                            ${badge}
+                        </button>`;
+                }).join('');
+
+                const status = document.getElementById(`status-${pkey}`);
+                if(this.subAssignments[pkey]) {
+                    const assignedTeacher = this.db.teachers.find(t => t.name === this.subAssignments[pkey]);
+                    status.innerHTML = `<i class="fa-solid fa-circle-check"></i> 已指派: ${assignedTeacher.displayName}`;
+                    status.className = "text-xs font-bold text-green-600";
+                }
+            }
+
+            toggleAssign(pkey, name) {
+                this.subAssignments[pkey] = (this.subAssignments[pkey] === name) ? null : name;
+                this.generateSubRecommendations();
+                this.showMessage(this.subAssignments[pkey] ? `已指派代號教師 ${this.subAssignments[pkey]}` : "已取消指派", "success");
+            }
+
+            toggleAllSubPeriods(checked) {
+                document.querySelectorAll('input[name="f5-p"]').forEach(i => i.checked = checked);
+            }
+
+            downloadReceipt() {
+                const absent = document.getElementById('f5-teacher').value;
+                const dateIn = document.getElementById('f5-date').value;
+                const day = CONFIG.DAYS[new Date(dateIn).getDay()-1];
+                const absentSched = this.db.getSchedule(absent, day);
+                const selectedPKeys = Array.from(document.querySelectorAll('input[name="f5-p"]:checked')).map(i => i.value);
+
+                let rowsHtml = "";
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    if(!selectedPKeys.includes(p.key)) return;
+                    const original = (absentSched && absentSched[idx]) ? absentSched[idx] : "---";
+                    const isActuallyFree = this.db.isLessonFree(absent, day, idx);
+                    const subTeacher = this.subAssignments[p.key] || (isActuallyFree ? "無需代課" : "尚未指派");
+                    
+                    rowsHtml += `<tr><td style="padding:10px; border:1px solid #000; text-align:center;">${p.label}</td><td style="padding:10px; border:1px solid #000; text-align:center;">${p.time}</td><td style="padding:10px; border:1px solid #000;">${original}</td><td style="padding:10px; border:1px solid #000; text-align:center; font-weight:bold; ${subTeacher === '尚未指派' ? 'color:red;' : ''}">${subTeacher}</td><td style="padding:10px; border:1px solid #000;"></td></tr>`;
+                });
+
+                const receiptHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>代課指派通知單 (代號版)</title><style>body{font-family:sans-serif;padding:30px;}.header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background-color:#f2f2f2;}.footer{margin-top:40px;display:flex;justify-content:space-between;}</style></head><body><div class="header"><h1>代課指派通知單 (簽收用)</h1></div><p><strong>請假教師：</strong> ${absent} (代號) &nbsp;&nbsp;&nbsp; <strong>日期：</strong> ${dateIn} (${day})</p><table><thead><tr><th style="border:1px solid #000; padding:10px;">節次</th><th style="border:1px solid #000; padding:10px;">時間時段</th><th style="border:1px solid #000; padding:10px;">原任內容</th><th style="border:1px solid #000; padding:10px;">代課教師 (代號)</th><th style="border:1px solid #000; padding:10px; width:100px;">簽署確認</th></tr></thead><tbody>${rowsHtml}</tbody></table><div class="footer"><p>教務主任：_____________________</p><p>日期：${new Date().toLocaleDateString('zh-HK')}</p></div><div style="margin-top:30px; text-align:center;"><button onclick="window.print()" style="padding:10px 20px; cursor:pointer;">列印此通知單</button></div></body></html>`;
+                const blob = new Blob([receiptHtml], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `代課指派單_${absent}_${dateIn}.html`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            showMessage(m, t) {
+                const c = document.getElementById('toast-container');
+                const d = document.createElement('div');
+                const bg = t === 'success' ? 'bg-green-600' : 'bg-red-600';
+                d.className = `${bg} text-white px-6 py-4 rounded-xl shadow-2xl toast-enter flex items-center gap-3`;
+                d.innerHTML = `<i class="fa-solid ${t === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${m}</span>`;
+                c.appendChild(d);
+                setTimeout(() => { d.classList.add('toast-exit-active'); setTimeout(() => d.remove(), 300); }, 3000);
+            }
+        }
+
+        const app = new App();
+        document.getElementById('f2-teacher').onchange = () => app.showTeacherTimetable();
+        app.showTeacherTimetable();
+    </script>
+</body>
+</html>
