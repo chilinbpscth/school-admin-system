@@ -269,6 +269,68 @@
             </div>
         </section>
 
+        <!-- Tab: Help -->
+        <section id="section-help" class="feature-section hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-3 text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-question text-sky-600"></i> 使用說明（DemoV3）
+                </h2>
+                <p class="text-sm text-slate-500 mb-6">開啟同一個 HTML 即可完成查詢、當值檢視與代課安排。以下為最常用操作：</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                        <h3 class="font-bold text-slate-700 mb-2 text-sm">快速上手</h3>
+                        <ul class="text-sm text-slate-600 space-y-1.5">
+                            <li>1) 用瀏覽器開啟此檔案。</li>
+                            <li>2) 頁籤切換：教師課表、空堂、當值、共同空堂、代課推薦。</li>
+                            <li>3) 代課日常流程：選請假教師 + 日期 + 節次，按「生成代課方案」。</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 rounded-xl bg-sky-50 border border-sky-100">
+                        <h3 class="font-bold text-sky-800 mb-2 text-sm">顯示規則（重要）</h3>
+                        <ul class="text-sm text-sky-700 space-y-1.5">
+                            <li>介面統一顯示教師代號（T01、T02...）。</li>
+                            <li>資料可保留老師簡稱，系統會自動轉為代號顯示。</li>
+                            <li>如資料寫成「A/B」或「A／B」，系統會視作兩位老師處理。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded-xl border border-indigo-100 bg-indigo-50/60">
+                        <h4 class="font-bold text-indigo-700 text-sm mb-2">教師課表</h4>
+                        <p class="text-xs text-indigo-700">顯示全週課堂 + 早會 + 小息/午膳當值。</p>
+                    </div>
+                    <div class="p-4 rounded-xl border border-green-100 bg-green-50/60">
+                        <h4 class="font-bold text-green-700 text-sm mb-2">查詢空堂老師</h4>
+                        <p class="text-xs text-green-700">選擇星期與時段後，即時列出空堂教師。</p>
+                    </div>
+                    <div class="p-4 rounded-xl border border-teal-100 bg-teal-50/60">
+                        <h4 class="font-bold text-teal-700 text-sm mb-2">當值及職務查詢</h4>
+                        <p class="text-xs text-teal-700">可切換早會/小息/午膳/課堂模式；小息一支援晴雨版本。</p>
+                    </div>
+                    <div class="p-4 rounded-xl border border-violet-100 bg-violet-50/60">
+                        <h4 class="font-bold text-violet-700 text-sm mb-2">共同空堂分析</h4>
+                        <p class="text-xs text-violet-700">勾選兩位或以上教師，分析全週共同空堂時段。</p>
+                    </div>
+                    <div class="p-4 rounded-xl border border-red-100 bg-red-50/60 md:col-span-2">
+                        <h4 class="font-bold text-red-700 text-sm mb-2">代課推薦系統</h4>
+                        <p class="text-xs text-red-700">候選人按當日負擔分排序（課堂2分 + 當值1分），可下載可列印指派單。</p>
+                    </div>
+                </div>
+
+                <details class="border border-slate-200 rounded-xl bg-slate-50/60 p-4">
+                    <summary class="cursor-pointer font-bold text-slate-700 text-sm">進階：資料輸入格式（客製化時使用）</summary>
+                    <div class="mt-4 text-xs text-slate-600 space-y-2 leading-6">
+                        <p><span class="font-bold">1) CONFIG.PERIODS：</span>調整時段時，需同步所有教師 Mon~Fri 陣列長度。</p>
+                        <p><span class="font-bold">2) teachersRaw：</span>空字串代表空堂；包含「備」字內容會視為空堂。</p>
+                        <p><span class="font-bold">3) DUTY_DATA：</span>午膳建議使用 <code>teachers: ["甲","乙"]</code>；如使用字串 <code>"甲/乙"</code> 亦可自動拆分。</p>
+                        <p><span class="font-bold">4) busyKeys：</span>需涵蓋你校常用班級/科目關鍵字，避免誤判空堂。</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
 
         <!-- Tab: Duty Schedule -->
 
@@ -369,7 +431,8 @@
             { id: 'section-free',      label: '查詢空堂老師',    icon: 'fa-user-check' },
             { id: 'section-duties',    label: '當值及職務查詢',  icon: 'fa-building-shield' },
             { id: 'section-common',    label: '共同空堂分析',    icon: 'fa-users-viewfinder' },
-            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' }
+            { id: 'section-sub',       label: '代課推薦系統',    icon: 'fa-user-pen' },
+            { id: 'section-help',      label: '使用說明',        icon: 'fa-circle-question' }
         ];
 
         const teachersRaw = [
