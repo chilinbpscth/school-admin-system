@@ -642,14 +642,14 @@
 
                 // 早會 duty first (before timetable starts)
                 if (dutyByPeriod['早會']) {
-                    workspace.appendChild(this._buildDutyCard('早會', dutyByPeriod['早會'], absent, day, variant, false));
+                    workspace.appendChild(this._buildDutyCard('早會', dutyByPeriod['早會'], absent, day, variant));
                 }
                 // All CONFIG.PERIODS in chronological order — break slots show duty, others show lesson
                 CONFIG.PERIODS.forEach((pInfo, pIdx) => {
                     const dutyPeriod = BREAK_DUTY[pInfo.key];
                     if (dutyPeriod) {
                         if (dutyByPeriod[dutyPeriod]) {
-                            workspace.appendChild(this._buildDutyCard(dutyPeriod, dutyByPeriod[dutyPeriod], absent, day, variant, dutyPeriod === '小息一'));
+                            workspace.appendChild(this._buildDutyCard(dutyPeriod, dutyByPeriod[dutyPeriod], absent, day, variant));
                         } else if (selectedPKeys.includes(pInfo.key)) {
                             const b = document.createElement('div');
                             b.className = 'p-5 rounded-2xl border-2 bg-slate-50 border-slate-200 opacity-60';
@@ -934,8 +934,11 @@
             const out = [];
             const hr = (DUTY_DATA['早會'][d]||[]).find(e=>e.teacher===teacherId);
             if (hr) out.push({period:'早會', time:'07:30–07:55', label:hr.pos});
-            const b1 = ((DUTY_DATA['小息一'][variant]||{})[d]||[]).find(e=>e.teacher===teacherId);
-            if (b1) out.push({period:'小息一', time:'10:00–10:30', label:b1.pos});
+            const b1variants = ['晴天','雨天上學期','雨天下學期'].map(v=>{
+                const e=((DUTY_DATA['小息一'][v]||{})[d]||[]).find(e=>e.teacher===teacherId);
+                return e ? {v, pos:e.pos} : null;
+            }).filter(Boolean);
+            if (b1variants.length) out.push({period:'小息一', time:'10:00–10:30', label:b1variants[0].pos, allVariants:b1variants});
             const b2 = (DUTY_DATA['小息二'][d]||[]).find(e=>e.teacher===teacherId);
             if (b2) out.push({period:'小息二', time:'12:00–12:10', label:b2.pos});
             const ln = (DUTY_DATA['午膳'][d]||[]).find(e=>e.teachers.includes(teacherId));
@@ -949,7 +952,7 @@
             const d = DAY_KEY[cnDay]; if (!d) return [];
             const busy = new Set();
             if (period === '小息一') {
-                ((DUTY_DATA['小息一'][variant||'晴天']||{})[d]||[]).forEach(e=>busy.add(e.teacher));
+                ['晴天','雨天上學期','雨天下學期'].forEach(v=>((DUTY_DATA['小息一'][v]||{})[d]||[]).forEach(e=>busy.add(e.teacher)));
             } else if (period === '午膳') {
                 (DUTY_DATA['午膳'][d]||[]).forEach(e=>e.teachers.forEach(t=>busy.add(t)));
             } else {
@@ -1015,7 +1018,7 @@
             return h;
         };
 
-        App.prototype._buildDutyCard = function(period, duty, absent, day, variant, showVariantToggle) {
+        App.prototype._buildDutyCard = function(period, duty, absent, day, variant) {
             const assigned = this.dutyAssignments[period];
             const aTeacher = assigned ? this.db.teachers.find(t=>t.name===assigned) : null;
             const statusHtml = aTeacher
@@ -1031,16 +1034,23 @@
                     return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日負擔: ${t.load}分（課×2＋當值×1）"><span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}分</span></button>`;
                 }).join('')
                 : '<span class="text-xs text-slate-400 italic">所有教師均有當值</span>';
-            const variantToggle = showVariantToggle ? `<div class="flex gap-1 flex-wrap">${['晴天','雨天上學期','雨天下學期'].map(v=>`<button onclick="app.setDutySubVariant('${v}')" class="text-xs px-2 py-1 rounded-lg border font-bold transition ${variant===v?'bg-purple-600 text-white border-purple-700':'bg-white text-purple-600 border-purple-200 hover:bg-purple-100'}">${v==='晴天'?'☀ 晴天':v==='雨天上學期'?'🌧 雨(上)':'🌧 雨(下)'}</button>`).join('')}</div>` : '';
+            // 小息一: show all variant positions inline
+            const posHtml = duty.allVariants
+                ? duty.allVariants.map(({v, pos}) => {
+                    const icon = v==='晴天' ? '☀' : '🌧';
+                    const tag = v==='晴天' ? '晴' : v==='雨天上學期' ? '雨(上)' : '雨(下)';
+                    return `<span class="inline-flex items-center gap-1 text-xs bg-white border border-purple-200 rounded-full px-2 py-0.5"><span class="opacity-70">${icon}${tag}</span><span class="font-bold text-slate-700">${pos}</span></span>`;
+                }).join('')
+                : `<span class="font-bold text-slate-800">${duty.label}</span>`;
             const div = document.createElement('div');
             div.className = 'p-6 rounded-2xl border-2 border-purple-100 bg-purple-50/50 shadow-sm';
             div.innerHTML = `<div class="flex justify-between items-center mb-4 border-b border-purple-200 pb-3 flex-wrap gap-2">
                 <div class="flex items-center gap-2 flex-wrap">
                     <span class="bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded"><i class="fa-solid fa-shield-halved mr-1"></i>${period}</span>
                     <span class="text-slate-400 text-xs">${duty.time}</span>
-                    <span class="font-bold text-slate-800">${duty.label}</span>
+                    ${posHtml}
                 </div>
-                <div class="flex items-center gap-2 flex-wrap">${statusHtml}${variantToggle}</div>
+                <div class="flex items-center gap-2 flex-wrap">${statusHtml}</div>
             </div>
             <div class="flex flex-wrap gap-2">${candsHtml}</div>`;
             return div;
