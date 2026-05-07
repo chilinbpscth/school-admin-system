@@ -1006,12 +1006,14 @@
             const statusHtml = aTeacher
                 ? `<span class="text-xs font-bold text-green-600"><i class="fa-solid fa-circle-check"></i> 已指派: ${aTeacher.displayName}</span>`
                 : `<span class="text-xs font-bold text-red-400"><i class="fa-solid fa-triangle-exclamation"></i> 未指派</span>`;
-            const freeCands = this.getDutyFreeTeachers(period, day, absent, variant);
+            const freeCands = this.getDutyFreeTeachers(period, day, absent, variant)
+                .map(t => ({ ...t, load: this.db.getWorkload(t.name, day) }))
+                .sort((a, b) => a.load - b.load);
             const candsHtml = freeCands.length
                 ? freeCands.map(t => {
                     const isAsgn = this.dutyAssignments[period]===t.name;
                     const cls = isAsgn ? 'bg-purple-600 text-white border-purple-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:border-purple-300';
-                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}">${t.displayName}</button>`;
+                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日課量: ${t.load}節"><span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}節</span></button>`;
                 }).join('')
                 : '<span class="text-xs text-slate-400 italic">所有教師均有當值</span>';
             const variantToggle = showVariantToggle ? `<div class="flex gap-1 flex-wrap">${['晴天','雨天上學期','雨天下學期'].map(v=>`<button onclick="app.setDutySubVariant('${v}')" class="text-xs px-2 py-1 rounded-lg border font-bold transition ${variant===v?'bg-purple-600 text-white border-purple-700':'bg-white text-purple-600 border-purple-200 hover:bg-purple-100'}">${v==='晴天'?'☀ 晴天':v==='雨天上學期'?'🌧 雨(上)':'🌧 雨(下)'}</button>`).join('')}</div>` : '';
