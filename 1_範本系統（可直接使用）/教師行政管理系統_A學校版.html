@@ -439,13 +439,23 @@
             }
             getWorkload(name, day) {
                 const sched = this.getSchedule(name, day);
-                let count = 0;
+                let score = 0;
                 if (!sched) return 0;
+                // Lessons = 2 pts each
                 sched.forEach((c, idx) => {
                     const p = CONFIG.PERIODS[idx];
-                    if (p.type === 'lesson' && !this.isLessonFree(name, day, idx)) count++;
+                    if (p.type === 'lesson' && !this.isLessonFree(name, day, idx)) score += 2;
                 });
-                return count;
+                // Duties = 1 pt each
+                const d = DAY_KEY[day];
+                if (d) {
+                    if ((DUTY_DATA['早會'][d]||[]).some(e=>e.teacher===name)) score++;
+                    if (Object.values(DUTY_DATA['小息一']).some(v=>(v[d]||[]).some(e=>e.teacher===name))) score++;
+                    if ((DUTY_DATA['小息二'][d]||[]).some(e=>e.teacher===name)) score++;
+                    if ((DUTY_DATA['午膳'][d]||[]).some(e=>e.teachers.includes(name))) score++;
+                    if ((DUTY_DATA['小息三'][d]||[]).some(e=>e.teacher===name)) score++;
+                }
+                return score;
             }
         }
 
@@ -684,8 +694,8 @@
                     const dot = (!isAssignedHere && assignedElsewhere > 0)
                         ? `<span class="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block"></span>`
                         : '';
-                    return `<button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${btnClass}" title="今日課量: ${c.load}節">
-                        ${dot}<span>${c.displayName}</span><span class="opacity-50 font-normal">${c.load}節</span>
+                    return `<button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${btnClass}" title="今日負擔: ${c.load}分（課×2＋當值×1）">
+                        ${dot}<span>${c.displayName}</span><span class="opacity-50 font-normal">${c.load}分</span>
                     </button>`;
                 }).join('');
                 const status = document.getElementById(`status-${pkey}`);
@@ -1013,7 +1023,7 @@
                 ? freeCands.map(t => {
                     const isAsgn = this.dutyAssignments[period]===t.name;
                     const cls = isAsgn ? 'bg-purple-600 text-white border-purple-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:border-purple-300';
-                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日課量: ${t.load}節"><span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}節</span></button>`;
+                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日負擔: ${t.load}分（課×2＋當值×1）"><span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}分</span></button>`;
                 }).join('')
                 : '<span class="text-xs text-slate-400 italic">所有教師均有當值</span>';
             const variantToggle = showVariantToggle ? `<div class="flex gap-1 flex-wrap">${['晴天','雨天上學期','雨天下學期'].map(v=>`<button onclick="app.setDutySubVariant('${v}')" class="text-xs px-2 py-1 rounded-lg border font-bold transition ${variant===v?'bg-purple-600 text-white border-purple-700':'bg-white text-purple-600 border-purple-200 hover:bg-purple-100'}">${v==='晴天'?'☀ 晴天':v==='雨天上學期'?'🌧 雨(上)':'🌧 雨(下)'}</button>`).join('')}</div>` : '';
