@@ -734,14 +734,18 @@
                 }
                 container.innerHTML = cands.map(c => {
                     const isAssignedHere = this.subAssignments[pkey] === c.name;
-                    const assignedElsewhere = Object.entries(this.subAssignments).filter(([k, v]) => k !== pkey && v === c.name).length;
+                    const total = Object.values(this.subAssignments).filter(v=>v===c.name).length
+                                + Object.values(this.dutyAssignments).filter(v=>v===c.name).length;
+                    const overloaded = total > 1;
                     const btnClass = isAssignedHere
-                        ? 'bg-blue-600 text-white border-blue-700'
-                        : assignedElsewhere > 0
-                            ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:border-blue-300';
-                    const dot = (!isAssignedHere && assignedElsewhere > 0)
-                        ? `<span class="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block"></span>`
+                        ? `bg-blue-600 text-white border-blue-700${overloaded ? ' ring-2 ring-red-400' : ''}`
+                        : overloaded
+                            ? 'bg-red-50 text-slate-700 border-red-300 hover:bg-red-100'
+                            : total === 1
+                                ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
+                                : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:border-blue-300';
+                    const dot = !isAssignedHere && total > 0
+                        ? `<span class="w-1.5 h-1.5 rounded-full ${overloaded ? 'bg-red-500' : 'bg-orange-400'} inline-block"></span>`
                         : '';
                     return `<button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${btnClass}" title="今日負擔: ${c.load}分（課×2＋當值×1）">
                         ${dot}<span>${c.displayName}</span><span class="opacity-50 font-normal">${c.load}分</span>
@@ -1074,8 +1078,20 @@
             const candsHtml = freeCands.length
                 ? freeCands.map(t => {
                     const isAsgn = this.dutyAssignments[period]===t.name;
-                    const cls = isAsgn ? 'bg-purple-600 text-white border-purple-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:border-purple-300';
-                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日負擔: ${t.load}分（課×2＋當值×1）"><span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}分</span></button>`;
+                    const total = Object.values(this.subAssignments).filter(v=>v===t.name).length
+                                + Object.values(this.dutyAssignments).filter(v=>v===t.name).length;
+                    const overloaded = total > 1;
+                    const cls = isAsgn
+                        ? `bg-purple-600 text-white border-purple-700${overloaded ? ' ring-2 ring-red-400' : ''}`
+                        : overloaded
+                            ? 'bg-red-50 text-slate-700 border-red-300 hover:bg-red-100'
+                            : total === 1
+                                ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
+                                : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:border-purple-300';
+                    const dot = !isAsgn && total > 0
+                        ? `<span class="w-1.5 h-1.5 rounded-full ${overloaded ? 'bg-red-500' : 'bg-orange-400'} inline-block"></span>`
+                        : '';
+                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}" title="今日負擔: ${t.load}分（課×2＋當值×1）">${dot}<span>${t.displayName}</span><span class="opacity-50 font-normal">${t.load}分</span></button>`;
                 }).join('')
                 : '<span class="text-xs text-slate-400 italic">所有教師均有當值</span>';
             // 小息一: show all variant positions inline
