@@ -22,11 +22,11 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Demo Developer Banner -->
-    <div class="bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md">
+    <div id="__dev-banner" data-protected="attribution-banner" class="bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md">
         <span>🔶 示範版本 DEMO V3 · 資料僅供展示</span>
         <span class="text-amber-200 hidden sm:inline">·</span>
-        <span class="hidden sm:inline">開發者：佛教志蓮小學 張定恒主任</span>
-        <a href="mailto:thcheung@chilinbps.edu.hk" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full hover:bg-amber-50 transition whitespace-nowrap">聯絡開發者</a>
+        <span class="hidden sm:inline" data-protected="dev-credit">開發者：佛教志蓮小學 張定恒主任</span>
+        <a href="mailto:thcheung@chilinbps.edu.hk" data-protected="dev-email" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full hover:bg-amber-50 transition whitespace-nowrap">聯絡開發者</a>
     </div>
 
     <!-- Header -->
@@ -38,7 +38,7 @@
                     <span class="bg-amber-400/40 text-amber-200 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-400/30">示範版 DEMO V3</span>
                 </h1>
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 mt-2">
-                    <p class="text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">
+                    <p id="__header-credit" data-protected="header-credit" class="text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">
                         開發者：佛教志蓮小學 張定恒主任
                     </p>
                 </div>
@@ -1196,6 +1196,153 @@
         app.initDutiesTab();
         document.getElementById('f2-teacher').onchange = () => app.showTeacherTimetable();
         app.showTeacherTimetable();
+
+        // ── 開發者署名保留模組 ── 本系統開源，歡迎各校使用及修改
+        // ── 如需客製化協助，請保留以下聯絡資料讓同工聯絡開發者 ──
+        (function() {
+            'use strict';
+
+            // UTF-8 safe base64 decoder
+            function _b64u(s) {
+                return decodeURIComponent(atob(s).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            }
+
+            // 開發者資料（編碼儲存，執行時解碼）
+            const _dev  = _b64u('5by15a6a5oGS5Li75Lu777yI5L2b5pWZ5b+X6JOu5bCP5a2477yJ'); // 張定恒主任（佛教志蓮小學）
+            const _em   = _b64u('dGhjaGV1bmdAY2hpbGluYnBzLmVkdS5oaw==');                  // thcheung@chilinbps.edu.hk
+            const _sch  = _b64u('5L2b5pWZ5b+X6JOu5bCP5a24');                               // 佛教志蓮小學
+
+            // ── 1. Console 開發者名片 ────────────────────────────────────────
+            function printDevCard() {
+                console.log(
+                    '%c 教師行政管理系統 · DEMO V3 ',
+                    'background:#1e3a8a;color:#fde047;font-size:15px;font-weight:bold;padding:8px 24px;border-radius:6px 6px 0 0'
+                );
+                console.log(
+                    '%c 👨‍💻 開發者：' + _dev,
+                    'background:#1e40af;color:#ffffff;font-size:13px;padding:6px 24px'
+                );
+                console.log(
+                    '%c 📧 如需為貴校客製化，歡迎聯絡：' + _em,
+                    'background:#1e3a8a;color:#93c5fd;font-size:12px;padding:6px 24px'
+                );
+                console.log(
+                    '%c 本系統開源，歡迎各校自由使用 😊 ',
+                    'background:#14532d;color:#bbf7d0;font-size:11px;padding:6px 24px;border-radius:0 0 6px 6px'
+                );
+            }
+
+            // ── 2. 開啟 DevTools 時顯示友善開發者資訊 ───────────────────────
+            let _dtShown = false;
+            function _checkDevTools() {
+                const widthDiff  = window.outerWidth  - window.innerWidth  > 160;
+                const heightDiff = window.outerHeight - window.innerHeight > 160;
+                if (widthDiff || heightDiff) {
+                    if (!_dtShown) {
+                        _dtShown = true;
+                        printDevCard();
+                        _showDevInfo();
+                    }
+                } else {
+                    if (_dtShown) {
+                        _dtShown = false;
+                        const ov = document.getElementById('__dev-info-bar');
+                        if (ov) ov.remove();
+                    }
+                }
+            }
+
+            function _showDevInfo() {
+                if (document.getElementById('__dev-info-bar')) return;
+                const bar = document.createElement('div');
+                bar.id = '__dev-info-bar';
+                bar.style.cssText = [
+                    'position:fixed','top:0','left:0','width:100%','z-index:99999',
+                    'background:rgba(20,83,45,0.95)','color:#fff',
+                    'padding:12px 20px','text-align:center',
+                    'font-family:sans-serif','font-size:13px','font-weight:500',
+                    'box-shadow:0 4px 24px rgba(0,0,0,.3)',
+                    'display:flex','align-items:center','justify-content:center','gap:16px','flex-wrap:wrap'
+                ].join(';');
+                bar.innerHTML = `
+                    <span style="font-size:18px">👨‍💻</span>
+                    <span>
+                        本系統由 <strong style="color:#86efac">${_dev}</strong> 開發 · 開源供各校使用
+                    </span>
+                    <span style="color:#a7f3d0">如需客製化協助：
+                        <a href="mailto:${_em}" style="color:#6ee7b7;font-weight:bold">${_em}</a>
+                    </span>
+                    <button onclick="this.parentElement.remove()"
+                        style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:4px 14px;border-radius:20px;cursor:pointer;font-size:12px;flex-shrink:0">
+                        ✕
+                    </button>`;
+                document.body.insertBefore(bar, document.body.firstChild);
+            }
+
+            // ── 3. DOM 署名守護（防意外刪除開發者聯絡資料）────────────────
+            function _restoreBanner() {
+                if (!document.getElementById('__dev-banner')) {
+                    const banner = document.createElement('div');
+                    banner.id = '__dev-banner';
+                    banner.setAttribute('data-protected', 'attribution-banner');
+                    banner.className = 'bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md';
+                    banner.innerHTML = `<span>🔶 示範版本 DEMO V3 · 資料僅供展示</span><span class="text-amber-200">·</span><span>開發者：${_sch} ${_dev}</span><a href="mailto:${_em}" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full">聯絡開發者</a>`;
+                    document.body.insertBefore(banner, document.body.firstChild);
+                }
+            }
+
+            function _restoreHeaderCredit() {
+                if (!document.getElementById('__header-credit')) {
+                    const headerInner = document.querySelector('header .container > div');
+                    if (headerInner) {
+                        const hc = document.createElement('p');
+                        hc.id = '__header-credit';
+                        hc.className = 'text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20';
+                        hc.textContent = '開發者：' + _sch + ' ' + _dev;
+                        headerInner.querySelector('div')?.appendChild(hc);
+                    }
+                }
+            }
+
+            function _verifyAttribution() {
+                const body = document.body?.innerHTML || '';
+                if (!body.includes('張定恒') || !body.includes(_sch)) {
+                    _restoreBanner();
+                    _restoreHeaderCredit();
+                }
+            }
+
+            function _setupGuard() {
+                const obs = new MutationObserver(function(muts) {
+                    muts.forEach(function(m) {
+                        if (m.type === 'childList' || m.type === 'characterData') {
+                            _verifyAttribution();
+                        }
+                    });
+                });
+                obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+                setInterval(_verifyAttribution, 4000);
+            }
+
+            // ── 4. 快捷鍵觸發名片（友善提示，不攔截行為）──────────────────
+            document.addEventListener('keydown', function(e) {
+                const isViewSrc  = e.ctrlKey && !e.shiftKey && e.key === 'u';
+                const isDevTools = e.ctrlKey &&  e.shiftKey && (e.key === 'I' || e.key === 'i');
+                const isF12      = e.key === 'F12';
+                if (isViewSrc || isDevTools || isF12) printDevCard();
+            });
+
+            document.addEventListener('contextmenu', function() { printDevCard(); });
+
+            // ── Init ─────────────────────────────────────────────────────────
+            printDevCard();
+            const _init = function() { _setupGuard(); setInterval(_checkDevTools, 1500); };
+            document.readyState === 'loading'
+                ? window.addEventListener('DOMContentLoaded', _init)
+                : _init();
+        })();
     </script>
 </body>
 </html>
