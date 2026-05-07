@@ -770,34 +770,92 @@
                 const absent = document.getElementById('f5-teacher').value;
                 const dateIn = document.getElementById('f5-date').value;
                 const day = CONFIG.DAYS[new Date(dateIn).getDay()-1];
+                const absentTeacher = this.db.teachers.find(t => t.name === absent);
+                const absentDisplay = absentTeacher ? absentTeacher.displayName : absent;
                 const absentSched = this.db.getSchedule(absent, day);
                 const selectedPKeys = Array.from(document.querySelectorAll('input[name="f5-p"]:checked')).map(i => i.value);
-                let rowsHtml = "";
-                CONFIG.PERIODS.forEach((p, idx) => {
-                    if (!selectedPKeys.includes(p.key)) return;
-                    const original = (absentSched && absentSched[idx]) ? absentSched[idx] : "---";
-                    const isActuallyFree = this.db.isLessonFree(absent, day, idx);
-                    const subTeacher = this.subAssignments[p.key] || (isActuallyFree ? "無需代課" : "尚未指派");
-                    rowsHtml += `<tr><td style="padding:10px;border:1px solid #000;text-align:center;">${p.label}</td><td style="padding:10px;border:1px solid #000;text-align:center;">${p.time}</td><td style="padding:10px;border:1px solid #000;">${original}</td><td style="padding:10px;border:1px solid #000;text-align:center;font-weight:bold;${subTeacher==='尚未指派'?'color:red;':''}">${subTeacher}</td><td style="padding:10px;border:1px solid #000;"></td></tr>`;
-                });
-                let dutyRowsHtml = "";
-                const _dtDuties = this.getTeacherDuties(absent, day, this.dutySubVariant || '晴天');
-                if (_dtDuties.length) {
-                    dutyRowsHtml += '<h2 style="margin-top:30px;border-top:1px solid #ccc;padding-top:15px;font-size:16px;">當值代替安排</h2>';
-                    dutyRowsHtml += '<table style="width:100%;border-collapse:collapse;margin-top:10px;"><thead><tr><th style="border:1px solid #000;padding:10px;">時段</th><th style="border:1px solid #000;padding:10px;">時間</th><th style="border:1px solid #000;padding:10px;">當值崗位/課室</th><th style="border:1px solid #000;padding:10px;">代替教師</th><th style="border:1px solid #000;padding:10px;width:100px;">簽署確認</th></tr></thead><tbody>';
-                    _dtDuties.forEach(d => {
-                        const subT = this.dutyAssignments[d.period] || '尚未指派';
-                        const isUnassigned = !this.dutyAssignments[d.period];
-                        dutyRowsHtml += `<tr><td style="padding:10px;border:1px solid #000;text-align:center;">${d.period}</td><td style="padding:10px;border:1px solid #000;text-align:center;">${d.time}</td><td style="padding:10px;border:1px solid #000;">${d.label}</td><td style="padding:10px;border:1px solid #000;text-align:center;font-weight:bold;${isUnassigned?'color:red;':''}">${subT}</td><td style="padding:10px;border:1px solid #000;"></td></tr>`;
-                    });
-                    dutyRowsHtml += '</tbody></table>';
+                const BREAK_DUTY = { br1:'小息一', br2:'小息二', lun:'午膳', br3:'小息三' };
+                const allDuties = this.getTeacherDuties(absent, day, '晴天');
+                const dutyByPeriod = {};
+                allDuties.forEach(d => { dutyByPeriod[d.period] = d; });
+
+                // Build rows in chronological order (same as workspace)
+                let rowsHtml = '';
+                const getDisplayName = name => { const t = this.db.teachers.find(t=>t.name===name); return t ? t.displayName : name; };
+
+                // 早會 duty
+                if (dutyByPeriod['早會']) {
+                    const sub = this.dutyAssignments['早會'];
+                    const posLabel = dutyByPeriod['早會'].label;
+                    rowsHtml += `<tr style="background:#f3f0ff;"><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;">早會當值</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;color:#555;">07:30–07:55</td><td style="padding:9px 12px;border:1px solid #ccc;">${posLabel}</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;${!sub?'color:red;':''}">${sub ? getDisplayName(sub) : '尚未指派'}</td><td style="padding:9px 12px;border:1px solid #ccc;"></td></tr>`;
                 }
-                const receiptHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>代課指派單</title><style>body{font-family:sans-serif;padding:30px;}.header{text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th{background:#f2f2f2;}.footer{margin-top:40px;display:flex;justify-content:space-between;}</style></head><body><div class="header"><h1>代課指派通知單</h1></div><p><strong>請假教師：</strong> ${absent} &nbsp;&nbsp;&nbsp; <strong>日期：</strong> ${dateIn} (${day})</p><table><thead><tr><th style="border:1px solid #000;padding:10px;">節次</th><th style="border:1px solid #000;padding:10px;">時間</th><th style="border:1px solid #000;padding:10px;">原任內容</th><th style="border:1px solid #000;padding:10px;">代課教師</th><th style="border:1px solid #000;padding:10px;width:100px;">簽署確認</th></tr></thead><tbody>${rowsHtml}</tbody></table>${dutyRowsHtml}<div class="footer"><p>教務主任：_____________________</p><p>日期：${new Date().toLocaleDateString('zh-HK')}</p></div><div style="margin-top:30px;text-align:center;"><button onclick="window.print()" style="padding:10px 20px;cursor:pointer;">列印</button></div></body></html>`;
+
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    const dutyPeriod = BREAK_DUTY[p.key];
+                    if (dutyPeriod) {
+                        const d = dutyByPeriod[dutyPeriod];
+                        if (d) {
+                            const posLabel = d.allVariants
+                                ? d.allVariants.map(({v,pos})=>`${v==='晴天'?'☀':'🌧'}${v==='雨天上學期'?'雨(上)':v==='雨天下學期'?'雨(下)':'晴'} ${pos}`).join('　')
+                                : d.label;
+                            const sub = this.dutyAssignments[dutyPeriod];
+                            rowsHtml += `<tr style="background:#f3f0ff;"><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;">${dutyPeriod}（當值）</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;color:#555;">${d.time}</td><td style="padding:9px 12px;border:1px solid #ccc;font-size:12px;">${posLabel}</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;${!sub?'color:red;':''}">${sub ? getDisplayName(sub) : '尚未指派'}</td><td style="padding:9px 12px;border:1px solid #ccc;"></td></tr>`;
+                        }
+                    } else {
+                        if (!selectedPKeys.includes(p.key)) return;
+                        const isActuallyFree = this.db.isLessonFree(absent, day, idx);
+                        const original = (absentSched && absentSched[idx]) ? absentSched[idx] : '---';
+                        const sub = this.subAssignments[p.key];
+                        const subLabel = sub ? getDisplayName(sub) : (isActuallyFree ? '無需代課' : '尚未指派');
+                        const rowStyle = isActuallyFree ? 'color:#aaa;' : '';
+                        rowsHtml += `<tr style="${rowStyle}"><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;">${p.label}</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;color:#555;">${p.time}</td><td style="padding:9px 12px;border:1px solid #ccc;">${original}</td><td style="padding:9px 12px;border:1px solid #ccc;text-align:center;font-weight:bold;${!sub&&!isActuallyFree?'color:red;':''}">${subLabel}</td><td style="padding:9px 12px;border:1px solid #ccc;"></td></tr>`;
+                    }
+                });
+
+                const receiptHtml = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>代課指派通知單</title>
+<style>
+  body{font-family:"Noto Sans TC",sans-serif;padding:32px 40px;font-size:14px;color:#111;}
+  h1{font-size:20px;text-align:center;margin:0 0 4px;}
+  .meta{display:flex;gap:40px;margin:16px 0 20px;font-size:14px;}
+  .meta span{display:inline-block;}
+  table{width:100%;border-collapse:collapse;}
+  th{background:#eee;padding:9px 12px;border:1px solid #ccc;text-align:center;font-size:13px;}
+  .legend{font-size:11px;color:#666;margin-top:8px;}
+  .legend span{display:inline-block;width:14px;height:10px;background:#f3f0ff;border:1px solid #ccc;vertical-align:middle;margin-right:4px;}
+  .footer{margin-top:36px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+  .sig{border-top:1px solid #555;padding-top:6px;font-size:13px;color:#333;}
+  .print-btn{margin-top:24px;text-align:center;}
+  @media print{.print-btn{display:none;}}
+</style></head><body>
+<h1>代課指派通知單</h1>
+<div class="meta">
+  <span><strong>請假教師：</strong>${absentDisplay}</span>
+  <span><strong>日期：</strong>${dateIn}（${day}）</span>
+  <span><strong>發出時間：</strong>${new Date().toLocaleString('zh-HK')}</span>
+</div>
+<table>
+  <thead><tr>
+    <th style="width:110px;">節次／時段</th>
+    <th style="width:110px;">時間</th>
+    <th>原任內容／當值崗位</th>
+    <th style="width:110px;">代課／代值教師</th>
+    <th style="width:90px;">簽署確認</th>
+  </tr></thead>
+  <tbody>${rowsHtml}</tbody>
+</table>
+<p class="legend"><span></span>紫色行 = 當值代替</p>
+<div class="footer">
+  <div class="sig">校長：</div>
+  <div class="sig">教務主任：</div>
+  <div class="sig">日期：${new Date().toLocaleDateString('zh-HK')}</div>
+</div>
+<div class="print-btn"><button onclick="window.print()" style="padding:10px 28px;font-size:14px;cursor:pointer;border:1px solid #999;border-radius:6px;">列印</button></div>
+</body></html>`;
                 const blob = new Blob([receiptHtml], { type: 'text/html;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = `代課指派單_${absent}_${dateIn}.html`;
+                link.download = `代課指派單_${absentDisplay}_${dateIn}.html`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
