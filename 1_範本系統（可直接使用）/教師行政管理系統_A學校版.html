@@ -650,6 +650,11 @@
                     if (dutyPeriod) {
                         if (dutyByPeriod[dutyPeriod]) {
                             workspace.appendChild(this._buildDutyCard(dutyPeriod, dutyByPeriod[dutyPeriod], absent, day, variant, dutyPeriod === '小息一'));
+                        } else if (selectedPKeys.includes(pInfo.key)) {
+                            const b = document.createElement('div');
+                            b.className = 'p-5 rounded-2xl border-2 bg-slate-50 border-slate-200 opacity-60';
+                            b.innerHTML = `<div class="flex justify-between items-center"><div class="flex items-center gap-2"><span class="bg-slate-300 text-white text-xs font-bold px-2 py-1 rounded">${pInfo.label}</span><span class="text-slate-400 text-xs">${pInfo.time}</span><span class="font-bold text-slate-400 italic">無當值（毋需代替）</span></div><i class="fa-solid fa-mug-hot text-slate-200"></i></div>`;
+                            workspace.appendChild(b);
                         }
                     } else {
                         if (!selectedPKeys.includes(pInfo.key)) return;
