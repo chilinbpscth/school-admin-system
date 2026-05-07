@@ -251,6 +251,7 @@
                         </label>
                         <div id="f5-periods-select" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3"></div>
                     </div>
+                    <div id="f5-preview" class="hidden mb-5 p-4 rounded-xl bg-white border border-slate-200"></div>
                     <button onclick="app.generateSubRecommendations()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1">
                         <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> 生成代課方案
                     </button>
@@ -497,6 +498,8 @@
                     subP.appendChild(l);
                 });
                 document.getElementById('f5-date').valueAsDate = new Date();
+                document.getElementById('f5-teacher').onchange = () => this.updateSubPreview();
+                document.getElementById('f5-date').onchange = () => this.updateSubPreview();
                 this.switchTab('section-overview');
             }
             switchTab(id) {
@@ -623,6 +626,47 @@
                 container.innerHTML = totalFree === 0
                     ? `<div class="p-10 bg-red-50 text-red-600 rounded-2xl text-center">整週均無共同空堂</div>`
                     : html;
+            }
+            updateSubPreview() {
+                const name = document.getElementById('f5-teacher').value;
+                const dateIn = document.getElementById('f5-date').value;
+                const preview = document.getElementById('f5-preview');
+                if (!name || !dateIn) { preview.classList.add('hidden'); return; }
+                const day = CONFIG.DAYS[new Date(dateIn).getDay()-1];
+                if (!day) { preview.classList.add('hidden'); return; }
+                const sched = this.db.getSchedule(name, day);
+                const duties = this.getTeacherDuties(name, day, '晴天');
+                const dutyByPeriod = {};
+                duties.forEach(d => { dutyByPeriod[d.period] = d; });
+                const BREAK_MAP = { br1:'小息一', br2:'小息二', lun:'午膳', br3:'小息三' };
+                const items = [];
+                if (dutyByPeriod['早會']) {
+                    items.push(`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-xs"><span class="font-bold text-indigo-700">早會</span><span class="text-indigo-500">${dutyByPeriod['早會'].label}</span></span>`);
+                }
+                const DUTY_COLOR = { '小息一':'bg-green-50 border-green-100 text-green-700', '小息二':'bg-sky-50 border-sky-100 text-sky-700', '午膳':'bg-amber-50 border-amber-100 text-amber-700', '小息三':'bg-rose-50 border-rose-100 text-rose-700' };
+                CONFIG.PERIODS.forEach((p, idx) => {
+                    const dutyPeriod = BREAK_MAP[p.key];
+                    if (dutyPeriod) {
+                        const d = dutyByPeriod[dutyPeriod];
+                        if (d) {
+                            const posLabel = d.allVariants
+                                ? d.allVariants.map(({v, pos}) => `${v==='晴天'?'☀':'🌧'}${pos}`).join(' · ')
+                                : d.label;
+                            const cls = DUTY_COLOR[dutyPeriod] || 'bg-slate-50 border-slate-200 text-slate-600';
+                            items.push(`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg ${cls} border text-xs"><span class="font-bold">${dutyPeriod}</span><span class="opacity-80">${posLabel}</span></span>`);
+                        }
+                    } else {
+                        const content = sched && sched[idx] ? sched[idx].trim() : '';
+                        if (content && !content.includes('備')) {
+                            items.push(`<span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 border border-slate-200 text-xs"><span class="font-bold text-slate-600">${p.label}</span><span class="text-slate-500">${content}</span></span>`);
+                        }
+                    }
+                });
+                const t = this.db.teachers.find(t => t.name === name);
+                preview.classList.remove('hidden');
+                preview.innerHTML = items.length
+                    ? `<p class="text-xs font-bold text-slate-400 mb-2">${t ? t.displayName : name} · ${day} 今日職務概覽</p><div class="flex flex-wrap gap-2">${items.join('')}</div>`
+                    : `<p class="text-xs text-slate-400">${t ? t.displayName : name} · ${day} 今日無課堂或當值記錄</p>`;
             }
             generateSubRecommendations() {
                 const absent = document.getElementById('f5-teacher').value;
