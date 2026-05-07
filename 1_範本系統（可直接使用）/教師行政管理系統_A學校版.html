@@ -650,7 +650,7 @@
                         if (isActuallyFree) {
                             block.innerHTML = `<div class="flex justify-between items-center"><div class="flex items-center gap-2 flex-wrap"><span class="bg-slate-300 text-white text-xs font-bold px-2 py-1 rounded">${pInfo.label}</span><span class="text-slate-400 text-xs">${pInfo.time}</span><span class="font-bold text-slate-400 italic">空堂 / 備課 (無需代課)</span></div><i class="fa-solid fa-mug-hot text-slate-200"></i></div>`;
                         } else {
-                            block.innerHTML = `<div class="flex justify-between items-center mb-6 border-b pb-4"><div class="flex items-center gap-2 flex-wrap"><span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">${pInfo.label}</span><span class="text-slate-400 text-xs">${pInfo.time}</span><span class="font-bold text-slate-800 text-lg">${content}</span></div><div class="text-xs font-bold text-red-400" id="status-${pInfo.key}"><i class="fa-solid fa-triangle-exclamation"></i> 未指派</div></div><div id="cand-${pInfo.key}" class="grid grid-cols-2 md:grid-cols-5 gap-3"></div>`;
+                            block.innerHTML = `<div class="flex justify-between items-center mb-4 border-b pb-4"><div class="flex items-center gap-2 flex-wrap"><span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">${pInfo.label}</span><span class="text-slate-400 text-xs">${pInfo.time}</span><span class="font-bold text-slate-800 text-lg">${content}</span></div><div class="text-xs font-bold text-red-400" id="status-${pInfo.key}"><i class="fa-solid fa-triangle-exclamation"></i> 未指派</div></div><div id="cand-${pInfo.key}" class="flex flex-wrap gap-2"></div>`;
                         }
                         workspace.appendChild(block);
                         if (!isActuallyFree) this.renderCandidates(day, pIdx, pInfo.key);
@@ -677,17 +677,15 @@
                     const isAssignedHere = this.subAssignments[pkey] === c.name;
                     const assignedElsewhere = Object.entries(this.subAssignments).filter(([k, v]) => k !== pkey && v === c.name).length;
                     const btnClass = isAssignedHere
-                        ? 'bg-blue-600 text-white border-blue-800 shadow-inner'
+                        ? 'bg-blue-600 text-white border-blue-700'
                         : assignedElsewhere > 0
                             ? 'bg-orange-50 text-slate-700 border-orange-300 hover:bg-orange-100'
-                            : 'bg-white text-slate-600 border-slate-100 hover:bg-blue-50';
-                    const badge = (!isAssignedHere && assignedElsewhere > 0)
-                        ? `<span class="text-[10px] font-bold bg-orange-200 text-orange-700 px-1.5 py-0.5 rounded-full mt-1">已代 ${assignedElsewhere} 堂</span>`
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:border-blue-300';
+                    const dot = (!isAssignedHere && assignedElsewhere > 0)
+                        ? `<span class="w-1.5 h-1.5 rounded-full bg-orange-400 inline-block"></span>`
                         : '';
-                    return `<button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="flex flex-col items-center p-3 border-2 rounded-xl transition ${btnClass}">
-                        <span class="text-sm font-bold">${c.displayName}</span>
-                        <span class="text-[10px] opacity-60">今日課量: ${c.load}節</span>
-                        ${badge}
+                    return `<button onclick="app.toggleAssign('${pkey}', '${c.name}')" class="inline-flex items-center gap-1 px-2.5 py-1 border rounded-full text-xs font-bold transition ${btnClass}" title="今日課量: ${c.load}節">
+                        ${dot}<span>${c.displayName}</span><span class="opacity-50 font-normal">${c.load}節</span>
                     </button>`;
                 }).join('');
                 const status = document.getElementById(`status-${pkey}`);
@@ -1012,8 +1010,8 @@
             const candsHtml = freeCands.length
                 ? freeCands.map(t => {
                     const isAsgn = this.dutyAssignments[period]===t.name;
-                    const cls = isAsgn ? 'bg-purple-600 text-white border-purple-800 shadow-inner' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50';
-                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="flex flex-col items-center px-3 py-2 border-2 rounded-xl transition ${cls}"><span class="text-sm font-bold">${t.displayName}</span></button>`;
+                    const cls = isAsgn ? 'bg-purple-600 text-white border-purple-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:border-purple-300';
+                    return `<button onclick="app.toggleDutyAssign('${period}','${t.name}')" class="inline-flex items-center px-2.5 py-1 border rounded-full text-xs font-bold transition ${cls}">${t.displayName}</button>`;
                 }).join('')
                 : '<span class="text-xs text-slate-400 italic">所有教師均有當值</span>';
             const variantToggle = showVariantToggle ? `<div class="flex gap-1 flex-wrap">${['晴天','雨天上學期','雨天下學期'].map(v=>`<button onclick="app.setDutySubVariant('${v}')" class="text-xs px-2 py-1 rounded-lg border font-bold transition ${variant===v?'bg-purple-600 text-white border-purple-700':'bg-white text-purple-600 border-purple-200 hover:bg-purple-100'}">${v==='晴天'?'☀ 晴天':v==='雨天上學期'?'🌧 雨(上)':'🌧 雨(下)'}</button>`).join('')}</div>` : '';
