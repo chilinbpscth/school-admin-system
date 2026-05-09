@@ -23,7 +23,7 @@
 
     <!-- Demo Developer Banner -->
     <div id="__dev-banner" data-protected="attribution-banner" class="bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md">
-        <span>🔶 示範版本 DEMO V3 · 資料僅供展示</span>
+        <span>🔶 B學校版 · 課節鐘點部分為預設（待校方正式作息表）</span>
         <span class="text-amber-200 hidden sm:inline">·</span>
         <span class="hidden sm:inline" data-protected="dev-credit">開發者：佛教志蓮小學 張定恒主任</span>
         <a href="mailto:thcheung@chilinbps.edu.hk" data-protected="dev-email" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full hover:bg-amber-50 transition whitespace-nowrap">聯絡開發者</a>
@@ -35,7 +35,7 @@
             <div class="flex flex-col items-center md:items-start text-center md:text-left">
                 <h1 class="text-xl md:text-2xl font-bold flex items-center gap-3">
                     <i class="fa-solid fa-user-tie text-yellow-400"></i> 2025 – 2026年度 教師行政管理系統
-                    <span class="bg-amber-400/40 text-amber-200 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-400/30">示範版 DEMO V3</span>
+                    <span class="bg-amber-400/40 text-amber-200 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-400/30">B學校版</span>
                 </h1>
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 mt-2">
                     <p id="__header-credit" data-protected="header-credit" class="text-xs text-yellow-200 font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">
@@ -44,8 +44,8 @@
                 </div>
             </div>
             <div class="flex flex-col items-center md:items-end gap-2 text-right">
-                <span class="text-[10px] md:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">數據版本：2026-05-07 版</span>
-                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100">全日 16 時段架構 (57位教師 · 簡稱代號模式)</span>
+                <span class="text-[10px] md:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">數據版本：2026-05-09 版</span>
+                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100">全日 22 時段架構（課前／小息／午膳／放學已對 PDF · 57 位教師 · 簡稱代號模式）</span>
             </div>
         </div>
     </header>
@@ -79,8 +79,8 @@
                     </div>
                     <div class="bg-amber-50 p-6 rounded-2xl border border-amber-100">
                         <div class="text-amber-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-clock"></i> <span>時段架構</span></div>
-                        <div class="text-5xl font-bold text-amber-900 mt-3">16 時段</div>
-                        <div class="text-xs text-amber-500 mt-2">全日 · 含早會、8節課、小息、午膳、增潤</div>
+                        <div class="text-5xl font-bold text-amber-900 mt-3">22 時段</div>
+                        <div class="text-xs text-amber-500 mt-2">全日 · 含課前當值、早會／班務、8 節課、動感小息、午膳、閱讀／增潤、放學當值</div>
                     </div>
                 </div>
 
@@ -102,24 +102,24 @@
                         <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
                             <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-walking text-2xl"></i></div>
                             <div>
-                                <div class="font-bold text-orange-800">小息（一）</div>
-                                <div class="text-sm text-orange-500">10:00 – 10:30</div>
-                                <div class="text-[10px] text-orange-400 mt-0.5">上午小息</div>
+                                <div class="font-bold text-orange-800">動感小息一</div>
+                                <div class="text-sm text-orange-500">10:20 – 10:40</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">上午小息（樓層當值）</div>
                             </div>
                         </div>
                         <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
                             <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-utensils text-2xl"></i></div>
                             <div>
-                                <div class="font-bold text-orange-800">小息（二）+ 午膳</div>
-                                <div class="text-sm text-orange-500">12:00 – 1:55</div>
-                                <div class="text-[10px] text-orange-400 mt-0.5">午間小息及午膳</div>
+                                <div class="font-bold text-orange-800">午膳 + 動感小息二</div>
+                                <div class="text-sm text-orange-500">12:35 – 13:25</div>
+                                <div class="text-[10px] text-orange-400 mt-0.5">午膳（12:35–13:00）· 動感小息二（13:00–13:25）</div>
                             </div>
                         </div>
                         <div class="p-4 bg-white border border-orange-100 rounded-2xl flex gap-4 items-center">
                             <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-walking text-2xl"></i></div>
                             <div>
-                                <div class="font-bold text-orange-800">小息（三）</div>
-                                <div class="text-sm text-orange-500">1:55 – 2:05</div>
+                                <div class="font-bold text-orange-800">小息三</div>
+                                <div class="text-sm text-orange-500">14:10 – 14:20</div>
                                 <div class="text-[10px] text-orange-400 mt-0.5">下午小息</div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
 
                 <div class="mt-8 pt-6 border-t text-xs text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
                     <span>數據來源：2025-2026 年度教師個人時間表 (PDF)</span>
-                    <span>更新日期：2026-05-07</span>
+                    <span>更新日期：2026-05-09</span>
                     <span>內部行政用途 · 簡稱隱私模式</span>
                 </div>
             </div>
@@ -273,7 +273,7 @@
         <section id="section-help" class="feature-section hidden">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h2 class="text-xl font-bold mb-3 text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-question text-sky-600"></i> 使用說明（DemoV3）
+                    <i class="fa-solid fa-circle-question text-sky-600"></i> 使用說明（B學校版）
                 </h2>
                 <p class="text-sm text-slate-500 mb-6">開啟同一個 HTML 即可完成查詢、當值檢視與代課安排。以下為最常用操作：</p>
 
@@ -1327,7 +1327,7 @@
             // ── 1. Console 開發者名片 ────────────────────────────────────────
             function printDevCard() {
                 console.log(
-                    '%c 教師行政管理系統 · DEMO V3 ',
+                    '%c 教師行政管理系統 · B學校版 ',
                     'background:#1e3a8a;color:#fde047;font-size:15px;font-weight:bold;padding:8px 24px;border-radius:6px 6px 0 0'
                 );
                 console.log(
@@ -1398,7 +1398,7 @@
                     banner.id = '__dev-banner';
                     banner.setAttribute('data-protected', 'attribution-banner');
                     banner.className = 'bg-amber-500 text-white py-2 px-4 no-print flex items-center justify-center gap-3 flex-wrap text-sm font-medium shadow-md';
-                    banner.innerHTML = `<span>🔶 示範版本 DEMO V3 · 資料僅供展示</span><span class="text-amber-200">·</span><span>開發者：${_sch} ${_dev}</span><a href="mailto:${_em}" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full">聯絡開發者</a>`;
+                    banner.innerHTML = `<span>🔶 B學校版 · 課節鐘點部分為預設（待校方正式作息表）</span><span class="text-amber-200">·</span><span>開發者：${_sch} ${_dev}</span><a href="mailto:${_em}" class="bg-white text-amber-600 text-xs font-bold px-3 py-1 rounded-full">聯絡開發者</a>`;
                     document.body.insertBefore(banner, document.body.firstChild);
                 }
             }
