@@ -45,7 +45,7 @@
             </div>
             <div class="flex flex-col items-center md:items-end gap-2 text-right">
                 <span class="text-[10px] md:text-xs bg-white/10 px-3 py-1 rounded-full border border-white/20">數據版本：2026-05-09 版</span>
-                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100">全日 22 時段架構（課前／小息／午膳／放學已對 PDF · 57 位教師 · 簡稱代號模式）</span>
+                <span class="text-[10px] md:text-xs bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30 text-blue-100">全日 22 時段架構（課前／小息／午膳／放學已對 PDF · 30 班 · 57 位教師 · 簡稱代號模式）</span>
             </div>
         </div>
     </header>
@@ -60,6 +60,7 @@
     <!-- Main Content -->
     <main class="flex-grow container mx-auto px-4 py-6 no-print">
 
+        <!-- 班級概覽：校方編制 30 班（每級 A–E）。教師時間表 teachersRaw 若仍沿用 27 個班別代碼，請日後補齊 1E／2E／4E 等格位後再對齊。 -->
         <!-- Tab: School Overview -->
         <section id="section-overview" class="feature-section hidden">
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
@@ -69,8 +70,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-blue-50 p-6 rounded-2xl border border-blue-100">
                         <div class="text-blue-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-users-class"></i> <span>班級數目</span></div>
-                        <div class="text-5xl font-bold text-blue-900 mt-3">27 班</div>
-                        <div class="text-xs text-blue-500 mt-2">小一至小六 · 共 27 班</div>
+                        <div class="text-5xl font-bold text-blue-900 mt-3">30 班</div>
+                        <div class="text-xs text-blue-500 mt-2">小一至小六 · 每級 5 班（A–E）· 共 30 班</div>
                     </div>
                     <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
                         <div class="text-emerald-600 text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-chalkboard-teacher"></i> <span>教師人數</span></div>
@@ -87,10 +88,10 @@
                 <div class="mb-8">
                     <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-list-ol text-blue-500"></i> 班級分佈</h3>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小一：</span> 1A · 1B · 1C · 1D（4班）</div>
-                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小二：</span> 2A · 2B · 2C · 2D（4班）</div>
+                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小一：</span> 1A · 1B · 1C · 1D · 1E（5班）</div>
+                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小二：</span> 2A · 2B · 2C · 2D · 2E（5班）</div>
                         <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小三：</span> 3A · 3B · 3C · 3D · 3E（5班）</div>
-                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小四：</span> 4A · 4B · 4C · 4D（4班）</div>
+                        <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小四：</span> 4A · 4B · 4C · 4D · 4E（5班）</div>
                         <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小五：</span> 5A · 5B · 5C · 5D · 5E（5班）</div>
                         <div class="p-3 bg-slate-50 rounded-xl border text-sm"><span class="font-bold text-slate-700">小六：</span> 6A · 6B · 6C · 6D · 6E（5班）</div>
                     </div>
@@ -376,7 +377,7 @@
                 { key: 'dis2', label: '第二輪放學當值', time: '16:55–17:05', type: 'duty' }
             ],
             DAYS: ["星期一", "星期二", "星期三", "星期四", "星期五"],
-            busyKeys: ["1A","1B","1C","1D","2A","2B","2C","2D","3A","3B","3C","3D","3E","4A","4B","4C","4D","5A","5B","5C","5D","5E","6A","6B","6C","6D","6E","人文","數學","英文","常識","中文","科學","普通話","音樂","體育","視藝","電腦","佛學","圖書","國學","創科","毛筆","NET","多元"]
+            busyKeys: ["1A","1B","1C","1D","1E","2A","2B","2C","2D","2E","3A","3B","3C","3D","3E","4A","4B","4C","4D","4E","5A","5B","5C","5D","5E","6A","6B","6C","6D","6E","人文","數學","英文","常識","中文","科學","普通話","音樂","體育","視藝","電腦","佛學","圖書","國學","創科","毛筆","NET","多元"]
         };
 
         const DUTY_DATA = {
